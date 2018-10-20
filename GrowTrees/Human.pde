@@ -1,7 +1,6 @@
 class Human extends Model{
   float speed;
   int intentionHostility; 
-
   int humanType;
   int destructiveWeapons;
   
