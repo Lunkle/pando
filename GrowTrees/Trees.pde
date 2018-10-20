@@ -1,0 +1,4 @@
+class Trees extends Model {
+
+
+}
