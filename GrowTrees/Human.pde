@@ -1,0 +1,4 @@
+class Human extends Model{
+    
+
+}
