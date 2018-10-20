@@ -10,7 +10,7 @@ class Block{
     
     void display(){
         pushMatrix();
-        translate(gridX, gridY, gridZ);
+        translate(gridX*BLOCK_SIZE, gridY*BLOCK_SIZE, gridZ*BLOCK_SIZE);
         box(BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
         popMatrix();
     }

@@ -23,15 +23,22 @@ class Map {
 
     void loadMap(String mapFile) {
         String[] temp = loadStrings(mapFile+".txt");
-        int mapSizeX = temp[0], mapSizeY = temp[1];
+        int mapSizeX = int(temp[0]), mapSizeY = int(temp[1]);
         map = new Block[mapSizeX][mapSizeY][mapHeight];
-        for (int i = 0; i < mapSizeX; i++)
-            for (int j = 0; j < mapSizeY; j++)
-                for (int k  = 0; k < mapHeight; k++) {
-                    String dataString = temp[i * mapSizeX + j * mapSizeY + k];
-                    String textData = split(dataString, ",");
-                    map[i][j][k] = new Block(int(textData[0]), int(textData[1]), int(textData[2]));
+        for (int k  = 0; k < mapHeight; k++)
+            for (int i = 0; i < mapSizeX; i++) {
+                String dataLine = temp[2 + k*mapHeight + i];
+
+                String[] data = dataLine.split(",");
+                for (int j = 0; j < mapSizeY; j++) switch(data[j].charAt(0)){
+                    case 'D':
+                        map[i][j][k] = new DirtBlock(i, j, k);
+                    case 'G':
+                        map[i][j][k] = new GrassBlock(i, j, k);
+                    case 'A':
+                        map[i][j][k] = new AirBlock(i, j, k);
                 }
+            }
     }
 
     void displayMap() {
@@ -46,6 +53,4 @@ class Map {
         }
         popMatrix();
     }
-}
-
 }
