@@ -1,5 +1,17 @@
 class Animal extends Model{
-    Animal(){
-        
+  int size;
+    Animal(){  
     }
+    
+    void die(){}
+    
+    void excrete(){}
+    
+    void breed(){}
+    
+    void helpTree(){}
+    
+    void killTree(){}
+    
+    
 }

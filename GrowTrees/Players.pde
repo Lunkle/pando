@@ -1,9 +1,3 @@
-class Player {
-  String name;
-  int identity;
-  
-  Player(String name, int identity) {
-    this.name = name;
-    this.identity = identity;
-  }
+class Player { //do stuff to control where trees appear
+
 }
