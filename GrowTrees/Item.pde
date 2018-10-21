@@ -5,7 +5,7 @@ class Item extends Model {
 }
 
 class Poop extends Model {
-    Item(PVector position, float scale, PShape model) {
+    Poop(PVector position, float scale, PShape model) {
         super(position, new PVector (0, 0, 0), scale, model);
     }
 }
