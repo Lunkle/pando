@@ -1,5 +1,5 @@
 class Map {
-    static final int mapHeight = 4;
+    static final int mapHeight = 60;
     int mapSizeX, mapSizeY;
     Block[][][] map;
 
@@ -24,6 +24,7 @@ class Map {
     void loadMap(String mapFile) {
         int buffer = 0;
         String[] temp = loadStrings(mapFile+".txt");
+        println(temp.length);
         int mapSizeX = int(temp[0]), mapSizeY = int(temp[1]);
         map = new Block[mapSizeX][mapSizeY][mapHeight];
         for (int k  = 0; k < mapHeight; k++)
@@ -32,7 +33,7 @@ class Map {
 
                 String[] data = dataLine.split(",");
                 for (int j = 0; j < mapSizeY; j++) {
-                    println(data[j]);
+                    //println(data[j]);
                     switch(data[j].charAt(0)) {
                     case 'D':
                         map[i][j][k] = new Dirt(i, j, k);
