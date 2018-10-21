@@ -18,3 +18,7 @@ void draw(){
     map.displayMap();
     popMatrix();
 }
+
+void keyPressed(){
+    player.moveCam();
+}
