@@ -12,7 +12,7 @@ abstract class Block {
     void display() {
         pushMatrix();
         fill(c);
-        translate(gridX * BLOCK_SIZE, gridZ * BLOCK_SIZE, gridY * BLOCK_SIZE);
+        translate(-gridZ * BLOCK_SIZE, gridX * BLOCK_SIZE, -gridY * BLOCK_SIZE);
         box(BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
         popMatrix();
     }
@@ -28,7 +28,10 @@ class Dirt extends Block {
 class Air extends Block {
     Air(int gridX, int gridY, int gridZ) {
         super(gridX, gridY, gridZ);
-        c = color(0, 191, 255, 30);
+        c = color(0, 191, 255, 0);
+    }
+
+    void display() {
     }
 }
 
@@ -39,10 +42,9 @@ class Water extends Block {
     }
 }
 
-class Grass extends Block{
-    Grass(int gridX, int gridY, int gridZ){
+class Grass extends Block {
+    Grass(int gridX, int gridY, int gridZ) {
         super(gridX, gridY, gridZ);
-        c = color(0,255,0);
+        c = color(0, 255, 0);
     }
-    
 }

@@ -1,6 +1,6 @@
 class Player { //do stuff to control where trees appear
     float camX = 0, camY = 0, camZ = 0;
-    float camRotX = 0, camRotY = 0, camRotZ = 0;
+    float camRotX = 0, camRotY = 1, camRotZ = 0;
     int camMoveAmount = 100;
 
     Player() {
