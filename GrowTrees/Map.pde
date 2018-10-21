@@ -28,10 +28,11 @@ class Map {
         map = new Block[mapSizeX][mapSizeY][mapHeight];
         for (int k  = 0; k < mapHeight; k++)
             for (int i = 0; i < mapSizeX; i++) {
-                String dataLine = temp[2 + k*mapHeight + i + k];
+                String dataLine = temp[2 + k*mapSizeX + i];
 
                 String[] data = dataLine.split(",");
                 for (int j = 0; j < mapSizeY; j++) {
+                    println(data[j]);
                     switch(data[j].charAt(0)) {
                     case 'D':
                         map[i][j][k] = new Dirt(i, j, k);
