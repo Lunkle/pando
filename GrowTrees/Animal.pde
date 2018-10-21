@@ -1,6 +1,6 @@
 class Animal extends Model {
     int size;
-    Animal(PVector position, float rotation, float scale, PShape model, int size) { 
+    Animal(PVector position, PVector rotation, float scale, PShape model, int size) { 
         super(position, rotation, scale, model);
         this.rotation = rotation;
         this.scale = scale;
