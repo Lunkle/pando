@@ -47,6 +47,12 @@ void keyRespond() {
         yValue += cos(player.camera.yaw);
         xValue += sin(player.camera.yaw);
     }
+    if(qPressed){
+        zValue -= 1;
+    } 
+    if(ePressed){
+        zValue += 1;
+    }
     player.camera.moveCamera(xValue, yValue, zValue);
 }
 
