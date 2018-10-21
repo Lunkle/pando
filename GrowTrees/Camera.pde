@@ -11,9 +11,14 @@ class Camera {
         this.yaw = xAngle;
         this.pitch = yAngle;
     }
+    
+    PVector getLookVector(){
+        return new PVector(cos(pitch)*cos(yaw), -cos(pitch)*sin(yaw), sin(pitch));
+    }
 
     void applyCamera() {
-        camera(xPos, yPos, zPos, xPos + cos(yaw), yPos - sin(yaw), zPos + sin(pitch), 0, 0, -1);
+        PVector lookVector = getLookVector();
+        camera(xPos, yPos, zPos, xPos + lookVector.x, yPos + lookVector.y, zPos + lookVector.z, 0,0,-1);
     }
 
     void rotateCamera() {
@@ -30,8 +35,8 @@ class Camera {
     void findLookedAt() {
         Block b;
         if (pitch > 0 && zPos > testMap.mapSizeZ) return;
-        PVector looking = new PVector(cos(yaw), -sin(yaw), sin(pitch));
-        drawVector(0, 0, 0, looking, 100);
+        PVector lookVector = getLookVector();
+        drawVector(0, 0, 0, lookVector, 100);
         float relZ = 0;
         for (float i = 0; relZ < zPos; i++) {
             relZ = cos(pitch) * i;
@@ -52,7 +57,6 @@ class Camera {
             catch(Exception e) {
             }
         }
-        println(degrees(yaw));
     }
 }
 
