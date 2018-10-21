@@ -63,3 +63,9 @@ class Grass extends Block {
         c = color(0, 255, 0);
     }
 }
+
+class Stone extends Block {
+   Stone(int gridX, int gridY, int gridZ){
+        super(gridX, gridY, gridZ);
+        c = color(128, 128, 128);
+}

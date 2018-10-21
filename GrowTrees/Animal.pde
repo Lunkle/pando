@@ -15,9 +15,21 @@ class Animal extends Model{
     
     void breed(){}
     
-    void helpTree(){}
     
-    void killTree(){}
+    
+    void helpTree(Tree tree){
+        tree.seedDispersal += 2;
+        tree.Height += 3;
+    }
+    
+    void killTree(Tree tree){
+        //tree animation of falling down
+        
+        tree = null;
+        
+        
+        
+    }
     
     
 }
