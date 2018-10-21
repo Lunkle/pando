@@ -21,7 +21,7 @@ class Animal extends Model {
 
     void helpTree(Tree tree) {
         tree.seedDispersal += 2;
-        tree.Height += 3;
+        //tree.Height += 3;
     }
 
     void killTree(Tree tree) {
