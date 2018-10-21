@@ -4,19 +4,18 @@ Player player;
 void setup() {
     fullScreen(P3D);
     player = new Player();
-    testMap = new Map("map");
+    testMap = new Map("testMap");
 }
 
 void draw() {
     background(25, 229, 229);
 
-    drawAxis();
-
     keyRespond();
     player.updatePlayer();
-    stroke(0);
+    
     testMap.displayMap();
-    println(frameRate);
+
+    drawAxis();
 }
 
 void drawAxis() {

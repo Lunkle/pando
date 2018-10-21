@@ -12,15 +12,21 @@ abstract class Block {
     void display() {
         pushMatrix();
         fill(c);
-        rotateY(-HALF_PI);
-        translate(-gridZ * BLOCK_SIZE, gridX * BLOCK_SIZE, -gridY * BLOCK_SIZE);
+        translate((gridX + 0.5) * BLOCK_SIZE, (gridY + 0.5) * BLOCK_SIZE, (gridZ + 0.5) * BLOCK_SIZE);
         box(BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
         popMatrix();
     }
 
     void display(Block[][][] map) {
+        //pushMatrix();
+        //translate(gridZ * BLOCK_SIZE, gridX * BLOCK_SIZE, -gridY * BLOCK_SIZE);
+        //if(!(map[gridX + 1][gridY][gridZ] instanceof Air)){
+        //    translate(HALF_BLOCK_SIZE, 0, 0);
+        //    //rotate();
+        //    //rect();
+        //}
+        //popMatrix();
         int amountAround = 0;
-        if(this instanceof Air)return;
         try {
             for (int i = -1; i < 2; i+=2) {
                 if ((!(map[gridX + i][gridY][gridZ] instanceof Air))) {
@@ -65,6 +71,7 @@ class Air extends Block {
     }
 
     void display() {
+        super.display();
     }
 }
 
