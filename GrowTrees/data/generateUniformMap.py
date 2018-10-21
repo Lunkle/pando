@@ -1,5 +1,5 @@
 import os
-size = 100
+size = 50
 stoneA = ["S"]*size
 dirtA = ["D"]*size
 grassA = ["G"]*size
@@ -10,22 +10,22 @@ endl = os.linesep
 with open("map.txt", 'w') as f:
     num = 0
     f.write("{}{}{}{}".format(size,endl, size,endl))
-    while num < 3:
+    while num < 1:
         for i in range(size):
-            f.write(",".join(airA) + endl)
+            f.write(",".join(stoneA) + endl)
         num += 1
         print(num)
     while num < 4:
         for i in range(size):
-            f.write(",".join(grassA) + endl)
+            f.write(",".join(dirtA) + endl)
         num += 1
         print(num)
     for i in range(size):
-        f.write(",".join(dirtA) + endl)
+        f.write(",".join(grassA) + endl)
     num += 1
 
     while num < 7:
         for i in range(size):
-            f.write(",".join(stoneA) + endl)
+            f.write(",".join(airA) + endl)
             print(num)
         num += 1
