@@ -12,8 +12,14 @@ class Tree extends Model{
     this.treeAge = treeAge;
   }
   
+  
   void killTree(){}
   
-  void plantTree(){}
+  void plantTree(Tree tree){
+      tree.seedDispersal --;
+      //spawn tree 
+  }
+  
+  
   
 }
