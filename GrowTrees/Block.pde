@@ -19,9 +19,11 @@ abstract class Block {
 }
 
 class Dirt extends Block {
+    int nutrients;
     Dirt(int gridX, int gridY, int gridZ) {
         super(gridX, gridY, gridZ);
         c = color(139, 69, 19);
+        nutrients = 30;
     }
 }
 
