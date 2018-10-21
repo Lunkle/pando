@@ -53,5 +53,4 @@ class Map {
         }
         popMatrix();
     }
-    
 }

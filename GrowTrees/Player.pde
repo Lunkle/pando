@@ -5,8 +5,8 @@ class Player {
     Player() {
         camera = new Camera(0, -100, 100, -HALF_PI, 0);
     }
-    
-    void updatePlayer(){
+
+    void updatePlayer() {
         camera.applyCamera();
     }
 }
