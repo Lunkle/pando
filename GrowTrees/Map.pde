@@ -1,5 +1,5 @@
 class Map {
-    static final int mapHeight = 60;
+    static final int MAP_HEIGHT = 7;
     int mapSizeX, mapSizeY;
     Block[][][] map;
 
@@ -18,7 +18,7 @@ class Map {
     }
 
     void initiateMap() { //TODO
-        map = new Block[mapSizeX][mapSizeY][mapHeight];
+        map = new Block[mapSizeX][mapSizeY][MAP_HEIGHT];
     }
 
     void loadMap(String mapFile) {
@@ -26,8 +26,8 @@ class Map {
         String[] temp = loadStrings(mapFile+".txt");
         println(temp.length);
         int mapSizeX = int(temp[0]), mapSizeY = int(temp[1]);
-        map = new Block[mapSizeX][mapSizeY][mapHeight];
-        for (int k  = 0; k < mapHeight; k++)
+        map = new Block[mapSizeX][mapSizeY][MAP_HEIGHT];
+        for (int k  = 0; k < MAP_HEIGHT; k++)
             for (int i = 0; i < mapSizeX; i++) {
                 String dataLine = temp[2 + k*mapSizeX + i];
 
@@ -47,9 +47,14 @@ class Map {
                     case 'W':
                         map[i][j][k] = new Water(i, j, k);
                         break;
+                    case 'S':
+                        map[i][j][k] = new Stone(i, j, k);
+                        break;
                     }
                 }
             }
+            
+     println("Done");
     }
 
     void displayMap() {
@@ -58,7 +63,7 @@ class Map {
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
                 for (int k = 0; k < map[i][j].length; k++) {
-                    map[i][j][k].display();
+                    map[i][j][k].display(this.map);
                 }
             }
         }

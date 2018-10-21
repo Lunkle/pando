@@ -20,14 +20,30 @@ abstract class Block {
 
     void display(Block[][][] map) {
         int amountAround = 0;
+        if(this instanceof Air)return;
         try {
-            for (int i = -1; i < 2; i++) {
-                if ((map[gridX + i][gridY][gridZ] != null || !(map[gridX + i][gridY][gridZ] instanceof Air)) && i !=0) {
+            for (int i = -1; i < 2; i+=2) {
+                if ((!(map[gridX + i][gridY][gridZ] instanceof Air))) {
                     amountAround++;
                 }
             }
-        } 
+
+            for (int i = -1; i < 2; i+=2) {
+                if ((!(map[gridX][gridY+i][gridZ] instanceof Air))) {
+                    amountAround++;
+                }
+            }
+            for (int i = -1; i < 2; i+=2) {
+                if ((!(map[gridX][gridY][gridZ + i] instanceof Air))) {
+                    amountAround++;
+                }
+            }
+        }        
         catch(IndexOutOfBoundsException e) {
+        }
+
+        if (amountAround != 6) {
+            display();
         }
     }
 }
