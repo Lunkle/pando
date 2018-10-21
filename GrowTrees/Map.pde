@@ -30,20 +30,26 @@ class Map {
                 String dataLine = temp[2 + k*mapHeight + i];
 
                 String[] data = dataLine.split(",");
-                for (int j = 0; j < mapSizeY; j++) switch(data[j].charAt(0)){
-                    case 'D':
-                        map[i][j][k] = new DirtBlock(i, j, k);
-                    case 'G':
-                        map[i][j][k] = new GrassBlock(i, j, k);
-                    case 'A':
-                        map[i][j][k] = new AirBlock(i, j, k);
+                for (int j = 0; j < mapSizeY; j++) switch(data[j].charAt(0)) {
+                case 'D':
+                    map[i][j][k] = new Dirt(i, j, k);
+                    break;
+                case 'G':
+                    map[i][j][k] = new Grass(i, j, k);
+                    break;
+                case 'A':
+                    map[i][j][k] = new Air(i, j, k);
+                    break;
+                case 'W':
+                    map[i][j][k] = new Water(i, j, k);
+                    break;
                 }
             }
     }
 
     void displayMap() {
         pushMatrix();
-        rotate(PI/4);
+        //rotate(PI/4);
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
                 for (int k = 0; k < map[i][j].length; k++) {

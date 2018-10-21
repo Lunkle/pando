@@ -1,6 +1,7 @@
-class Block {
+abstract class Block {
     static final int BLOCK_SIZE = 100;
     int gridX, gridY, gridZ;
+    color c;
 
     Block(int gridX, int gridY, int gridZ) {
         this.gridX = gridX;
@@ -10,14 +11,14 @@ class Block {
 
     void display() {
         pushMatrix();
-        translate(gridX, gridY, gridZ);
+        fill(c);
+        translate(gridX * BLOCK_SIZE, gridZ * BLOCK_SIZE, gridY * BLOCK_SIZE);
         box(BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
         popMatrix();
     }
 }
 
 class Dirt extends Block {
-    color c;
     Dirt(int gridX, int gridY, int gridZ) {
         super(gridX, gridY, gridZ);
         c = color(139, 69, 19);
@@ -25,17 +26,23 @@ class Dirt extends Block {
 }
 
 class Air extends Block {
-    color c;
     Air(int gridX, int gridY, int gridZ) {
         super(gridX, gridY, gridZ);
-        c = color(0, 191, 255);
+        c = color(0, 191, 255, 30);
     }
 }
 
 class Water extends Block {
-    color c;
     Water(int gridX, int gridY, int gridZ) {
         super(gridX, gridY, gridZ);
         c = color(0, 0, 255);
     }
+}
+
+class Grass extends Block{
+    Grass(int gridX, int gridY, int gridZ){
+        super(gridX, gridY, gridZ);
+        c = color(0,255,0);
+    }
+    
 }

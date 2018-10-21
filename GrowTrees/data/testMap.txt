@@ -1,5 +1,13 @@
 3
 3
+A,A,A
+A,A,A
+A,A,A
+
+G,G,G
+G,G,G
+G,G,G
+
 D,D,D
 D,D,D
 D,D,D
@@ -7,11 +15,3 @@ D,D,D
 D,D,D
 D,D,D
 D,D,D
-
-G,G,G
-G,G,G
-G,G,G
-
-A,A,A
-A,A,A
-A,A,A
