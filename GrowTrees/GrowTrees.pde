@@ -10,8 +10,7 @@ void setup(){
 void draw(){
     background(25, 229, 229);
     pushMatrix();
-    translate(200, 600, -200);
-    //camera(player.camX, player.camY, player.camZ, 0,0,0, player.camRotX, player.camRotY, player.camRotZ);
+    camera(player.camX, player.camY, player.camZ, 0,0,0, player.camRotX, player.camRotY, player.camRotZ);
     
     fill(255, 150, 100);
     textSize(50);
