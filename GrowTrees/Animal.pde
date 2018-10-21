@@ -19,7 +19,7 @@ class Animal extends Model {
         try {
 
             if (testMap.map[gridX][gridY][gridZ] instanceof Dirt) {
-                map[gridX][gridY][gridZ].nutrients++;
+                ((Dirt) testMap.map[gridX][gridY][gridZ]).nutrients++;
             }
         } 
         catch (Exception e) {
