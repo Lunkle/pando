@@ -11,11 +11,11 @@ void draw(){
     background(25, 229, 229);
     pushMatrix();
     camera(player.camX, player.camY, player.camZ, 0,0,0, player.camRotX, player.camRotY, player.camRotZ);
-    popMatrix();
     
     fill(255, 150, 100);
     textSize(50);
     map.displayMap();
+    popMatrix();
 }
 
 void keyPressed(){

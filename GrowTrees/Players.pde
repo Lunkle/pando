@@ -7,7 +7,6 @@ class Player { //do stuff to control where trees appear
     }
 
     void moveCam() {
-        println(key);
         if (key == CODED) {
             if (keyCode == SHIFT) camY+=10;
             else if (keyCode == CONTROL) camY -= 10;
@@ -15,15 +14,19 @@ class Player { //do stuff to control where trees appear
             switch(key) {
             case 'd':
                 camX += camMoveAmount;
+                println('d');
                 break;
             case 'a':
                 camX -= camMoveAmount;
+                println('a');
                 break;
             case 'w':
                 camZ -= camMoveAmount;
+                println('w');
                 break;
             case 's':
                 camZ += camMoveAmount;
+                println('s');
                 break;
             }
         }
