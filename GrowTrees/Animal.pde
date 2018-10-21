@@ -11,7 +11,19 @@ class Animal extends Model {
     void die() {
     }
 
-    void excrete() {
+    void excrete(PVector position) {
+        int gridX = round(position.x/Block.BLOCK_SIZE);
+        int gridY = round(position.y/Block.BLOCK_SIZE);
+        int gridZ = round(position.z/Block.BLOCK_SIZE);
+
+        try {
+
+            if (testMap.map[gridX][gridY][gridZ] instanceof Dirt) {
+                map[gridX][gridY][gridZ].nutrients++;
+            }
+        } 
+        catch (Exception e) {
+        }
     }
 
     void breed() {

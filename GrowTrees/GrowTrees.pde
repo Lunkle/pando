@@ -1,24 +1,23 @@
-Map map;
+Map testMap;
 Player player;
 
-void setup(){
+void setup() {
     fullScreen(P3D);
     player = new Player();
-    map = new Map("testMap");
-    
+    testMap = new Map("testMap");
 }
 
-void draw(){
+void draw() {
     background(25, 229, 229);
-    
+
     drawAxis();
-    
+
     keyRespond();
     player.updatePlayer();
-    map.displayMap();
+    testMap.displayMap();
 }
 
-void drawAxis(){
+void drawAxis() {
     strokeWeight(20);
     stroke(255, 0, 0);
     line(0, 0, 0, 500, 0, 0);
