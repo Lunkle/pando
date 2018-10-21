@@ -22,27 +22,30 @@ class Map {
     }
 
     void loadMap(String mapFile) {
+        int buffer = 0;
         String[] temp = loadStrings(mapFile+".txt");
         int mapSizeX = int(temp[0]), mapSizeY = int(temp[1]);
         map = new Block[mapSizeX][mapSizeY][mapHeight];
         for (int k  = 0; k < mapHeight; k++)
             for (int i = 0; i < mapSizeX; i++) {
-                String dataLine = temp[2 + k*mapHeight + i];
+                String dataLine = temp[2 + k*mapHeight + i + k];
 
                 String[] data = dataLine.split(",");
-                for (int j = 0; j < mapSizeY; j++) switch(data[j].charAt(0)) {
-                case 'D':
-                    map[i][j][k] = new Dirt(i, j, k);
-                    break;
-                case 'G':
-                    map[i][j][k] = new Grass(i, j, k);
-                    break;
-                case 'A':
-                    map[i][j][k] = new Air(i, j, k);
-                    break;
-                case 'W':
-                    map[i][j][k] = new Water(i, j, k);
-                    break;
+                for (int j = 0; j < mapSizeY; j++) {
+                    switch(data[j].charAt(0)) {
+                    case 'D':
+                        map[i][j][k] = new Dirt(i, j, k);
+                        break;
+                    case 'G':
+                        map[i][j][k] = new Grass(i, j, k);
+                        break;
+                    case 'A':
+                        map[i][j][k] = new Air(i, j, k);
+                        break;
+                    case 'W':
+                        map[i][j][k] = new Water(i, j, k);
+                        break;
+                    }
                 }
             }
     }

@@ -5,6 +5,7 @@ void setup(){
     fullScreen(P3D);
     player = new Player();
     map = new Map("testMap");
+    
 }
 
 void draw(){
@@ -14,8 +15,7 @@ void draw(){
     
     keyRespond();
     player.updatePlayer();
-    
-    //map.displayMap();
+    map.displayMap();
 }
 
 void drawAxis(){
