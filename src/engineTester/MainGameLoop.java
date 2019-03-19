@@ -37,7 +37,7 @@ public class MainGameLoop {
 		fernModel.getTexture().setUseFakeLighting(true);
 
 		List<Entity> ferns = new ArrayList<Entity>();
-		List<Terrain> terrains = new ArrayList<Terrain>();
+		ArrayList<Terrain> terrains = new ArrayList<Terrain>();
 
 		Random random = new Random();
 		for (int i = 0; i < 50; i++) {
@@ -67,8 +67,9 @@ public class MainGameLoop {
 		MasterRenderer renderer = new MasterRenderer();
 
 		while (!Display.isCloseRequested()) {
+			Terrain playerTerrain = findCurrentTerrain(player, terrains);
 			camera.move();
-			player.move();
+			player.move(playerTerrain);
 			renderer.processEntity(player);
 			for (Terrain terrain : terrains) {
 				renderer.processTerrain(terrain);
@@ -84,6 +85,13 @@ public class MainGameLoop {
 		loader.cleanUp();
 		DisplayManager.closeDisplay();
 
+	}
+
+	private static Terrain findCurrentTerrain(Player player, ArrayList<Terrain> terrains) {
+		for (Terrain terrain : terrains) {
+
+		}
+		return terrains.get(0);
 	}
 
 }

@@ -6,12 +6,14 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import models.RawModel;
 import renderEngine.Loader;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
+import toolbox.Maths;
 
 public class Terrain {
 
@@ -69,11 +71,11 @@ public class Terrain {
 		float yCoord = (terrainX % gridSquareSize) / gridSquareSize;
 		float result;
 		if (xCoord <= (1 - yCoord)) {
-
+			result = Maths.barryCentric(new Vector3f(0, heights[gridX][gridY], 0), new Vector3f(1, heights[gridX + 1][gridY], 0), new Vector3f(0, heights[gridX][gridY + 1], 1), new Vector2f(xCoord, yCoord));
 		} else {
-
+			result = Maths.barryCentric(new Vector3f(1, heights[gridX + 1][gridY], 0), new Vector3f(1, heights[gridX + 1][gridY + 1], 1), new Vector3f(0, heights[gridX][gridY + 1], 1), new Vector2f(xCoord, yCoord));
 		}
-		return heights[gridY][gridX];
+		return result;
 	}
 
 	private RawModel generateTerrain(Loader loader, String heightMap) {
@@ -106,9 +108,9 @@ public class Terrain {
 				vertices[vertexPointer * 3 + 2] = (float) i / ((float) vertexCountY - 1) * SIZE;
 				// Calculating normals
 				Vector3f normal = calculateNormal(j, i, image);
-				normals[vertexPointer * 3] = 0;
-				normals[vertexPointer * 3 + 1] = 1;
-				normals[vertexPointer * 3 + 2] = 0;
+				normals[vertexPointer * 3] = normal.x;
+				normals[vertexPointer * 3 + 1] = normal.y;
+				normals[vertexPointer * 3 + 2] = normal.z;
 				// Calculating texture coordinates
 				textureCoords[vertexPointer * 2] = (float) j / ((float) vertexCountX - 1);
 				textureCoords[vertexPointer * 2 + 1] = (float) i / ((float) vertexCountY - 1);
