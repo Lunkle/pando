@@ -9,13 +9,11 @@ import terrains.Terrain;
 
 public class Player extends Entity {
 
-	private static final float RUN_SPEED = 20; // Units are pixels per second.
+	private static final float RUN_SPEED = 80; // Units are pixels per second.
 	private static final float TURN_SPEED = 160; // Units are degrees per second.
 	private static final float JUMP_POWER = 30; // Units are pixels per second.
 
 	private static final float GRAVITY = -50; // Units are pixels per second squared.
-
-	private static final float TERRAIN_HEIGHT = 0;
 
 	private boolean onGround = true;
 
@@ -36,7 +34,7 @@ public class Player extends Entity {
 		float xDisplacement = (float) (Math.sin(Math.toRadians(getRotY())) * distance);
 		float zDisplacement = (float) (Math.cos(Math.toRadians(getRotY())) * distance);
 		super.increasePosition(xDisplacement, upwardsSpeed * frameTime, zDisplacement);
-		float terrainHeight = terrain.getHeightOfTerrain(xDisplacement, zDisplacement);
+		float terrainHeight = terrain.getHeightOfTerrain(super.getPosition().x, super.getPosition().z);
 		if (super.getPosition().y <= terrainHeight) {
 			upwardsSpeed = 0;
 			super.getPosition().y = terrainHeight;

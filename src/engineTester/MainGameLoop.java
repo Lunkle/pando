@@ -39,13 +39,6 @@ public class MainGameLoop {
 		List<Entity> ferns = new ArrayList<Entity>();
 		ArrayList<Terrain> terrains = new ArrayList<Terrain>();
 
-		Random random = new Random();
-		for (int i = 0; i < 50; i++) {
-			ferns.add(new Entity(fernModel, new Vector3f(random.nextFloat() * 800, 0, random.nextFloat() * 600), 0, 0, 0, 3));
-		}
-
-		Light light = new Light(new Vector3f(20000, 20000, 2000), new Vector3f(1, 1, 1));
-
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
 		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("dirt"));
 		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("pinkFlowers"));
@@ -57,6 +50,16 @@ public class MainGameLoop {
 		terrains.add(new Terrain(0, 0, loader, texturePack, blendMap, "heightmap"));
 //		terrains.add(new Terrain(1, 0, loader, texturePack, blendMap, "heightmap"));
 
+		Random random = new Random();
+		for (int i = 0; i < 50; i++) {
+			float entityX = random.nextFloat() * 800;
+			float entityZ = random.nextFloat() * 600;
+			float entityY = findCurrentTerrain(entityX, entityZ, terrains).getHeightOfTerrain(entityX, entityZ);
+			ferns.add(new Entity(fernModel, new Vector3f(entityX, entityY, entityZ), 0, 0, 0, 3));
+		}
+
+		Light light = new Light(new Vector3f(20000, 20000, 2000), new Vector3f(1, 1, 1));
+
 		ModelTexture whiteTexture = new ModelTexture(loader.loadTexture("white"));
 		ModelData stanfordBunnyData = OBJFileLoader.loadOBJ("bunny");
 		RawModel rawStanfordBunnyModel = loader.loadToVAO(stanfordBunnyData);
@@ -67,7 +70,7 @@ public class MainGameLoop {
 		MasterRenderer renderer = new MasterRenderer();
 
 		while (!Display.isCloseRequested()) {
-			Terrain playerTerrain = findCurrentTerrain(player, terrains);
+			Terrain playerTerrain = findCurrentTerrain(player.getPosition().x, player.getPosition().z, terrains);
 			camera.move();
 			player.move(playerTerrain);
 			renderer.processEntity(player);
@@ -87,9 +90,11 @@ public class MainGameLoop {
 
 	}
 
-	private static Terrain findCurrentTerrain(Player player, ArrayList<Terrain> terrains) {
+	private static Terrain findCurrentTerrain(float playerX, float playerZ, ArrayList<Terrain> terrains) {
 		for (Terrain terrain : terrains) {
-
+			if (playerX > terrain.getX() && playerX < terrain.getX() + Terrain.SIZE && playerZ > terrain.getZ() && playerZ < terrain.getZ() + Terrain.SIZE) {
+				return terrain;
+			}
 		}
 		return terrains.get(0);
 	}
