@@ -5,12 +5,15 @@ import java.util.List;
 import java.util.Random;
 
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import entities.Entity;
 import entities.Light;
 import entities.Player;
 import entities.ThirdPersonCamera;
+import gui.GUIRenderer;
+import gui.GUITexture;
 import models.RawModel;
 import models.TexturedModel;
 import objConverter.ModelData;
@@ -53,7 +56,7 @@ public class MainGameLoop {
 		Random random = new Random();
 		for (int i = 0; i < 50; i++) {
 			float entityX = random.nextFloat() * 800;
-			float entityZ = random.nextFloat() * 600;
+			float entityZ = random.nextFloat() * 800;
 			float entityY = findCurrentTerrain(entityX, entityZ, terrains).getHeightOfTerrain(entityX, entityZ);
 			ferns.add(new Entity(fernModel, new Vector3f(entityX, entityY, entityZ), 0, 0, 0, 3));
 		}
@@ -65,26 +68,34 @@ public class MainGameLoop {
 		RawModel rawStanfordBunnyModel = loader.loadToVAO(stanfordBunnyData);
 		TexturedModel stanfordBunnyModel = new TexturedModel(rawStanfordBunnyModel, whiteTexture);
 
+		List<GUITexture> guis = new ArrayList<>();
+		GUITexture gui = new GUITexture(loader.loadTexture("dukemascot"), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
+		guis.add(gui);
+
 		Player player = new Player(stanfordBunnyModel, new Vector3f(100, 0, 150), 0.0f, 0.0f, 0.0f, 1.0f);
 		ThirdPersonCamera camera = new ThirdPersonCamera(player);
-		MasterRenderer renderer = new MasterRenderer();
+
+		MasterRenderer masterRenderer = new MasterRenderer();
+		GUIRenderer guiRenderer = new GUIRenderer(loader);
 
 		while (!Display.isCloseRequested()) {
 			Terrain playerTerrain = findCurrentTerrain(player.getPosition().x, player.getPosition().z, terrains);
 			camera.move();
 			player.move(playerTerrain);
-			renderer.processEntity(player);
+			masterRenderer.processEntity(player);
 			for (Terrain terrain : terrains) {
-				renderer.processTerrain(terrain);
+				masterRenderer.processTerrain(terrain);
 			}
 			for (Entity entity : ferns) {
-				renderer.processEntity(entity);
+				masterRenderer.processEntity(entity);
 			}
-			renderer.render(light, camera);
+			masterRenderer.render(light, camera);
+			guiRenderer.render(guis);
 			DisplayManager.updateDisplay();
 		}
 
-		renderer.cleanUp();
+		masterRenderer.cleanUp();
+//		GUIRenderer.cleanUp();
 		loader.cleanUp();
 		DisplayManager.closeDisplay();
 

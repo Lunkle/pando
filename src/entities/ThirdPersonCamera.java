@@ -10,7 +10,7 @@ public class ThirdPersonCamera extends Camera {
 
 	private float distanceFromEntity = 100;
 	private float angleAroundEntity = 0;
-
+	private Mode mode;
 	private Entity followEntity;
 
 	public ThirdPersonCamera(Entity targetEntity) {
