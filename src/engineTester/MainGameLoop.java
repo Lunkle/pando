@@ -92,8 +92,8 @@ public class MainGameLoop {
 
 		while (!Display.isCloseRequested()) {
 			Terrain playerTerrain = findCurrentTerrain(player.getPosition().x, player.getPosition().z, terrains);
-			camera.move();
 			player.move(playerTerrain);
+			camera.move();
 			masterRenderer.processEntity(player);
 			for (Terrain terrain : terrains) {
 				masterRenderer.processTerrain(terrain);
