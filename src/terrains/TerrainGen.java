@@ -12,7 +12,7 @@ public class TerrainGen {
 
 	// File data
 	private String fileName;
-	private String location
+	private String location;
 	
 	public TerrainGen(int x, int y, String fileName, String location) {
 		this.x = x;
@@ -27,7 +27,7 @@ public class TerrainGen {
 		
 		// File metadata, might not be neccecary
 		writer.write(Integer.toString(x));
-		writer.write(' ');
+		writer.write(" ");
 		writer.write(Integer.toString(y));
 		
 		// Write y lines of x zeros
@@ -46,7 +46,7 @@ public class TerrainGen {
 	
 	// Get functions, not sure if these are neccecary, but oh well
 	public String getName() {
-		return fileName;
+		return location + '/' + fileName + ".txt";
 	}
 	
 	public int getX() {
