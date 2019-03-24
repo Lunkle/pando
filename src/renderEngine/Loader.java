@@ -20,9 +20,9 @@ import objConverter.ModelData;
 
 public class Loader {
 
-	private List<Integer> vaos = new ArrayList<Integer>();
-	private List<Integer> vbos = new ArrayList<Integer>();
-	private List<Integer> textures = new ArrayList<Integer>();
+	private List<Integer> vaos = new ArrayList<>();
+	private List<Integer> vbos = new ArrayList<>();
+	private List<Integer> textures = new ArrayList<>();
 
 	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, int[] indices) {
 		int vaoID = createVAO();
@@ -32,6 +32,13 @@ public class Loader {
 		storeDataInAttributeList(2, 3, normals);
 		unbindVAO();
 		return new RawModel(vaoID, indices.length);
+	}
+
+	public RawModel loadToVAO(float[] positions) {
+		int vaoID = createVAO();
+		this.storeDataInAttributeList(0, 2, positions);
+		unbindVAO();
+		return new RawModel(vaoID, positions.length / 2);
 	}
 
 	public RawModel loadToVAO(ModelData modelData) {

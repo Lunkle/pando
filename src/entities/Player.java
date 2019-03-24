@@ -11,9 +11,9 @@ public class Player extends Entity {
 
 	private static final float RUN_SPEED = 80; // Units are pixels per second.
 	private static final float TURN_SPEED = 160; // Units are degrees per second.
-	private static final float JUMP_POWER = 30; // Units are pixels per second.
+	private static final float JUMP_POWER = 50; // Units are pixels per second.
 
-	private static final float GRAVITY = -50; // Units are pixels per second squared.
+	private static final float GRAVITY = -150; // Units are pixels per second squared.
 
 	private boolean onGround = true;
 
