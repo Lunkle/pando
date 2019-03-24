@@ -13,6 +13,7 @@ import models.RawModel;
 import renderEngine.Loader;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
+import terrains.TerrainGen;
 import toolbox.Maths;
 
 public class Terrain {
@@ -37,6 +38,12 @@ public class Terrain {
 		z = gridZ * SIZE;
 		model = generateTerrain(loader, heightMap);
 		gridSquareSize = SIZE / (float) (heights.length - 1);
+		
+		TerrainGen gen = new TerrainGen(800, 800, "map");
+		try {
+			gen.makeDefaultFile();
+		} 
+		catch (Exception e) {}
 	}
 
 	public float getX() {
