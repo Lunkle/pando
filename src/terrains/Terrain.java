@@ -39,7 +39,8 @@ public class Terrain {
 		model = generateTerrain(loader, heightMap);
 		gridSquareSize = SIZE / (float) (heights.length - 1);
 		
-		TerrainGen gen = new TerrainGen(800, 800, "map");
+		// I put this here just because but I don't think it has to be here
+		TerrainGen gen = new TerrainGen(800, 800, "map", "res");
 		try {
 			gen.makeDefaultFile();
 		} 
