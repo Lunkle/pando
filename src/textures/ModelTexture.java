@@ -10,8 +10,18 @@ public class ModelTexture {
 	private boolean hasTransparency = false;
 	private boolean useFakeLighting = false;
 
+	private int textureGridSize = 1;
+
 	public ModelTexture(int texture) {
 		this.textureID = texture;
+	}
+
+	public int getTextureGridSize() {
+		return textureGridSize;
+	}
+
+	public void setTextureGridSize(int textureGridSize) {
+		this.textureGridSize = textureGridSize;
 	}
 
 	public boolean isUseFakeLighting() {

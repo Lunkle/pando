@@ -35,14 +35,15 @@ public class MainGameLoop {
 
 		ModelData fernData = OBJFileLoader.loadOBJ("fern");
 		RawModel rawFernModel = loader.loadToVAO(fernData);
-		TexturedModel fernModel = new TexturedModel(rawFernModel, new ModelTexture(loader.loadTexture("fern")));
+		ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fern"));
+		fernTextureAtlas.setTextureGridSize(2);
+		TexturedModel fernModel = new TexturedModel(rawFernModel, fernTextureAtlas);
 		fernModel.getTexture().setHasTransparency(true);
 		fernModel.getTexture().setUseFakeLighting(true);
 
 		ModelData oakTreeStage1Data = OBJFileLoader.loadOBJ("oakTreeStage1");
 		RawModel rawOakTreeStage1Model = loader.loadToVAO(oakTreeStage1Data);
 		TexturedModel oakTreeStage1Model = new TexturedModel(rawOakTreeStage1Model, new ModelTexture(loader.loadTexture("oakTreeStage1")));
-//		oakTreeStage1Data.
 
 		List<Entity> ferns = new ArrayList<Entity>();
 		List<Entity> oaks = new ArrayList<Entity>();
@@ -64,7 +65,7 @@ public class MainGameLoop {
 			float entityX = random.nextFloat() * 800;
 			float entityZ = random.nextFloat() * 800;
 			float entityY = findCurrentTerrain(entityX, entityZ, terrains).getHeightOfTerrain(entityX, entityZ);
-			ferns.add(new Entity(fernModel, new Vector3f(entityX, entityY, entityZ), 0, 0, 0, 3));
+			ferns.add(new Entity(fernModel, random.nextInt(4), new Vector3f(entityX, entityY, entityZ), 0, 0, 0, 3));
 		}
 		for (int i = 0; i < 5000; i++) {
 			float entityX = random.nextFloat() * 800;
@@ -81,7 +82,7 @@ public class MainGameLoop {
 		TexturedModel stanfordBunnyModel = new TexturedModel(rawStanfordBunnyModel, whiteTexture);
 
 		List<GUITexture> guis = new ArrayList<GUITexture>();
-		GUITexture gui = new GUITexture(loader.loadTexture("socuwan"), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
+		GUITexture gui = new GUITexture(loader.loadTexture("dukemascot"), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
 		guis.add(gui);
 
 		Player player = new Player(stanfordBunnyModel, new Vector3f(100, 0, 150), 0.0f, 0.0f, 0.0f, 1.0f);

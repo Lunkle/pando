@@ -1,8 +1,8 @@
 package entities;
 
-import models.TexturedModel;
-
 import org.lwjgl.util.vector.Vector3f;
+
+import models.TexturedModel;
 
 public class Entity {
 
@@ -10,15 +10,30 @@ public class Entity {
 	private Vector3f position;
 	private float rotX, rotY, rotZ;
 	private float scale;
+	private float textureXOffset, textureYOffset;
 
-	public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ,
-			float scale) {
+	public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
 		this.model = model;
 		this.position = position;
 		this.rotX = rotX;
 		this.rotY = rotY;
 		this.rotZ = rotZ;
 		this.scale = scale;
+	}
+
+	public Entity(TexturedModel model, int index, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
+		this.model = model;
+		calculateTextureOffsets(index);
+		this.position = position;
+		this.rotX = rotX;
+		this.rotY = rotY;
+		this.rotZ = rotZ;
+		this.scale = scale;
+	}
+
+	private void calculateTextureOffsets(int index) {
+		textureXOffset = calculateTextureXOffset(index);
+		textureYOffset = calculateTextureYOffset(index);
 	}
 
 	public void increasePosition(float dx, float dy, float dz) {
@@ -31,6 +46,24 @@ public class Entity {
 		this.rotX += dx;
 		this.rotY += dy;
 		this.rotZ += dz;
+	}
+
+	public float calculateTextureXOffset(int textureIndex) {
+		int column = textureIndex % model.getTexture().getTextureGridSize();
+		return (float) column / (float) model.getTexture().getTextureGridSize();
+	}
+
+	public float calculateTextureYOffset(int textureIndex) {
+		int row = textureIndex / model.getTexture().getTextureGridSize();
+		return (float) row / (float) model.getTexture().getTextureGridSize();
+	}
+
+	public float getTextureXOffset() {
+		return textureXOffset;
+	}
+
+	public float getTextureYOffset() {
+		return textureYOffset;
 	}
 
 	public TexturedModel getModel() {

@@ -13,12 +13,11 @@ import models.RawModel;
 import renderEngine.Loader;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
-import terrains.TerrainGen;
 import toolbox.Maths;
 
 public class Terrain {
 
-	public static final float SIZE = 1200;
+	public static final float SIZE = 800;
 	private static final float MAX_HEIGHT = 40;
 	private static final float MAX_PIXEL_COLOUR = 256 * 256 * 256;
 
@@ -38,13 +37,8 @@ public class Terrain {
 		z = gridZ * SIZE;
 		model = generateTerrain(loader, heightMap);
 		gridSquareSize = SIZE / (float) (heights.length - 1);
-		
-		// I put this here just because but I don't think it has to be here
 		TerrainGen gen = new TerrainGen(800, 800, "map", "res");
-		try {
-			gen.makeDefaultFile();
-		} 
-		catch (Exception e) {}
+		gen.makeDefaultFile();
 	}
 
 	public float getX() {

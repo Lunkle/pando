@@ -14,8 +14,10 @@ uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform vec3 lightPosition;
-
 uniform float useFakeLighting;
+
+uniform int textureGridSize;
+uniform vec2 offset;
 
 const float density = 0.0027;
 const float gradient = 10.5;
@@ -25,7 +27,7 @@ void main(void){
 	vec4 worldPosition = transformationMatrix * vec4(position,1.0);
 	vec4 positionRelativeToCamera = viewMatrix * worldPosition;
 	gl_Position = projectionMatrix * positionRelativeToCamera;
-	pass_textureCoordinates = textureCoordinates;
+	pass_textureCoordinates = offset + textureCoordinates/textureGridSize;
 	
 	vec3 actualNormal = normal;
 	if(useFakeLighting > 0.5){
