@@ -21,7 +21,7 @@ import toolbox.Maths;
 public class Terrain {
 
 	public static final float SIZE = 800;
-	public static final float HEXAGON_SIDE_LENGTH = 1;
+	public static final float HEXAGON_SIDE_LENGTH = 5;
 	public static final float HEXAGON_HALF_SQRTHREE_LENGTH = HEXAGON_SIDE_LENGTH * (float) Math.sqrt(3) / 2;
 	public static final float HEXAGON_SQRTHREE_LENGTH = HEXAGON_HALF_SQRTHREE_LENGTH * 2;
 	private static final float MAX_HEIGHT = 40;
@@ -41,10 +41,10 @@ public class Terrain {
 		this.blendMap = blendMap;
 		x = gridX * SIZE;
 		z = gridZ * SIZE;
-		model = generateHexagonMeshTerrain(loader, heightMap);
 //		gridSquareSize = SIZE / (float) (heights.length - 1);
-//		TerrainGen gen = new TerrainGen(20, 20, "map", "res");
-//		gen.makeDefaultFile();
+		TerrainGen gen = new TerrainGen(20, 20, "map", "res");
+		gen.makeDefaultFile();
+		model = generateHexagonMeshTerrain(loader, heightMap);
 	}
 
 	public float getX() {
@@ -165,6 +165,7 @@ public class Terrain {
 					for (int i = 0; i < 6; i++) {
 						Vector3f vertice = new Vector3f(vertices[startingVerticeIndex + i * 3], height, vertices[startingVerticeIndex + i * 3 + 2]);
 						Vector3f normal = calculateHexagonMeshNormal(center, vertice);
+						normal = new Vector3f(0, 1, 0);
 						normals[startingVerticeIndex + i * 3] = normal.x;
 						normals[startingVerticeIndex + i * 3 + 1] = normal.y;
 						normals[startingVerticeIndex + i * 3 + 2] = normal.z;
@@ -184,21 +185,25 @@ public class Terrain {
 		int[] indices = new int[12 * count];
 		for (int y = 0; y < gridSizeY; y++) {
 			for (int x = 0; x < gridSizeX; x++) {
-				int startingVerticeIndex = 12 * (y * gridSizeX + x);
-				indices[startingVerticeIndex] = 0;
-				indices[startingVerticeIndex + 1] = 2;
-				indices[startingVerticeIndex + 2] = 4;
-				indices[startingVerticeIndex + 3] = 0;
-				indices[startingVerticeIndex + 4] = 1;
-				indices[startingVerticeIndex + 5] = 2;
-				indices[startingVerticeIndex + 6] = 2;
-				indices[startingVerticeIndex + 7] = 3;
-				indices[startingVerticeIndex + 8] = 4;
-				indices[startingVerticeIndex + 9] = 0;
-				indices[startingVerticeIndex + 10] = 4;
-				indices[startingVerticeIndex + 11] = 5;
+				int startingIndiceIndex = 12 * (y * gridSizeX + x);
+				int startingVerticeIndex = 6 * (y * gridSizeX + x);
+				indices[startingIndiceIndex] = startingVerticeIndex;
+				indices[startingIndiceIndex + 1] = startingVerticeIndex + 2;
+				indices[startingIndiceIndex + 2] = startingVerticeIndex + 4;
+				indices[startingIndiceIndex + 3] = startingVerticeIndex;
+				indices[startingIndiceIndex + 4] = startingVerticeIndex + 1;
+				indices[startingIndiceIndex + 5] = startingVerticeIndex + 2;
+				indices[startingIndiceIndex + 6] = startingVerticeIndex + 2;
+				indices[startingIndiceIndex + 7] = startingVerticeIndex + 3;
+				indices[startingIndiceIndex + 8] = startingVerticeIndex + 4;
+				indices[startingIndiceIndex + 9] = startingVerticeIndex;
+				indices[startingIndiceIndex + 10] = startingVerticeIndex + 4;
+				indices[startingIndiceIndex + 11] = startingVerticeIndex + 5;
 			}
 		}
+//		for (float vertice : vertices) {
+//			System.out.println(vertice); 
+//		}
 		return loader.loadToVAO(vertices, textureCoords, normals, indices);
 	}
 
