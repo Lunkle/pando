@@ -127,6 +127,7 @@ public class Terrain {
 			e.printStackTrace();
 			return null;
 		}
+		heights = new float[gridSizeY][gridSizeX];
 		int count = gridSizeX * gridSizeY;
 		float[] vertices = new float[(int) (count * 18)];
 		float[] normals = new float[(int) (count * 18)];
