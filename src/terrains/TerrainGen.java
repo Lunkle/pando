@@ -38,7 +38,7 @@ public class TerrainGen {
 				writer.write('\n');
 				writer.write("0");
 				for (int n = 0; n < x - 1; n++) {
-					writer.write(", 0");
+					writer.write(",0");
 				}
 			}
 			writer.flush();

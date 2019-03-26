@@ -57,20 +57,20 @@ public class MainGameLoop {
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
-		terrains.add(new Terrain(0, 0, loader, texturePack, blendMap, "heightmap"));
+		terrains.add(new Terrain(0, 0, loader, texturePack, blendMap, "map"));
 //		terrains.add(new Terrain(1, 0, loader, texturePack, blendMap, "heightmap"));
 
 		Random random = new Random();
 		for (int i = 0; i < 50; i++) {
 			float entityX = random.nextFloat() * 800;
 			float entityZ = random.nextFloat() * 800;
-			float entityY = findCurrentTerrain(entityX, entityZ, terrains).getHeightOfTerrain(entityX, entityZ);
+			float entityY = findCurrentTerrain(entityX, entityZ, terrains).getHeightOfTriangleMeshTerrain(entityX, entityZ);
 			ferns.add(new Entity(fernModel, random.nextInt(4), new Vector3f(entityX, entityY, entityZ), 0, 0, 0, 3));
 		}
 		for (int i = 0; i < 5000; i++) {
 			float entityX = random.nextFloat() * 800;
 			float entityZ = random.nextFloat() * 800;
-			float entityY = findCurrentTerrain(entityX, entityZ, terrains).getHeightOfTerrain(entityX, entityZ);
+			float entityY = findCurrentTerrain(entityX, entityZ, terrains).getHeightOfTriangleMeshTerrain(entityX, entityZ);
 			oaks.add(new Entity(oakTreeStage1Model, new Vector3f(entityX, entityY, entityZ), 0, random.nextFloat() * 360, 0, 3));
 		}
 
