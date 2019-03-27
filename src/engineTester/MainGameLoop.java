@@ -29,7 +29,7 @@ import textures.TerrainTexturePack;
 public class MainGameLoop {
 
 	public static void main(String[] args) {
-
+		// main
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
 
