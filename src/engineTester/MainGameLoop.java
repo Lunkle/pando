@@ -99,12 +99,12 @@ public class MainGameLoop {
 			for (Terrain terrain : terrains) {
 				masterRenderer.processTerrain(terrain);
 			}
-			for (Entity entity : ferns) {
-				masterRenderer.processEntity(entity);
-			}
-			for (Entity entity : oaks) {
-				masterRenderer.processEntity(entity);
-			}
+//			for (Entity entity : ferns) {
+//				masterRenderer.processEntity(entity);
+//			}
+//			for (Entity entity : oaks) {
+//				masterRenderer.processEntity(entity);
+//			}
 			masterRenderer.render(light, camera);
 			guiRenderer.render(guis);
 			DisplayManager.updateDisplay();
