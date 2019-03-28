@@ -47,7 +47,7 @@ public class MainGameLoop {
 
 		List<Entity> ferns = new ArrayList<Entity>();
 		List<Entity> oaks = new ArrayList<Entity>();
-		Terrain[][] terrains = new Terrain[10][10];
+		Terrain[][] terrains = new Terrain[1][1];
 
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
 		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("dirt"));

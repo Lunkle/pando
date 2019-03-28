@@ -5,14 +5,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import models.RawModel;
 import renderEngine.Loader;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
-import toolbox.Maths;
 
 public class Terrain {
 
@@ -33,14 +31,13 @@ public class Terrain {
 	private float[][] heights;
 	float gridSquareSize;
 
-	public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texture, TerrainTexture blendMap,
-			String heightMap) {
+	public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texture, TerrainTexture blendMap, String heightMap) {
 		texturePack = texture;
 		this.blendMap = blendMap;
 		x = gridX * X_SIZE;
-		z = gridZ * X_SIZE;
+		z = gridZ * Z_SIZE;
 //		gridSquareSize = SIZE / (float) (heights.length - 1);
-		TerrainGen gen = new TerrainGen(600, 600, "map", "res");
+		TerrainGen gen = new TerrainGen(20, 20, "map", "res");
 		gen.makeDefaultFile();
 		model = generateHexagonMeshTerrain(loader, heightMap);
 	}
@@ -66,28 +63,24 @@ public class Terrain {
 	}
 
 	public float getHeightOfHexagonMeshTerrain(float worldX, float worldZ) {
-		float terrainX = worldX - this.x;
-		float terrainZ = worldZ - this.z;
-
-		int gridZ = (int) Math.floor((terrainZ - HEXAGON_SIDE_LENGTH / 2) / gridSquareSize);
-		float offset = HEXAGON_HALF_SQRTHREE_LENGTH * (gridZ % 2);
-		int gridX = (int) Math.floor((terrainX - offset) / gridSquareSize);
-		if (gridX < 0 || gridX > heights.length - 1 || gridZ < 0 || gridZ > heights.length - 1) {
-//			return null;
-		}
-		float xCoord = (terrainX % gridSquareSize) / gridSquareSize;
-		float yCoord = (terrainX % gridSquareSize) / gridSquareSize;
-		float result;
-		if (xCoord <= (1 - yCoord)) {
-			result = Maths.barryCentric(new Vector3f(0, heights[gridX][gridZ], 0),
-					new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(0, heights[gridX][gridZ + 1], 1),
-					new Vector2f(xCoord, yCoord));
-		} else {
-			result = Maths.barryCentric(new Vector3f(1, heights[gridX + 1][gridZ], 0),
-					new Vector3f(1, heights[gridX + 1][gridZ + 1], 1), new Vector3f(0, heights[gridX][gridZ + 1], 1),
-					new Vector2f(xCoord, yCoord));
-		}
-		return result;
+//		float terrainX = worldX - this.x;
+//		float terrainZ = worldZ - this.z;
+//
+//		int gridZ = (int) Math.floor((terrainZ - HEXAGON_SIDE_LENGTH / 2) / gridSquareSize);
+//		float offset = HEXAGON_HALF_SQRTHREE_LENGTH * (gridZ % 2);
+//		int gridX = (int) Math.floor((terrainX - offset) / gridSquareSize);
+//		if (gridX < 0 || gridX > heights.length - 1 || gridZ < 0 || gridZ > heights.length - 1) {
+////			return null;
+//		}
+//		float xCoord = (terrainX % gridSquareSize) / gridSquareSize;
+//		float yCoord = (terrainX % gridSquareSize) / gridSquareSize;
+//		float result;
+//		if (xCoord <= (1 - yCoord)) {
+//			result = Maths.barryCentric(new Vector3f(0, heights[gridX][gridZ], 0), new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(0, heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, yCoord));
+//		} else {
+//			result = Maths.barryCentric(new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(1, heights[gridX + 1][gridZ + 1], 1), new Vector3f(0, heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, yCoord));
+//		}
+		return 0;
 	}
 
 	private RawModel generateHexagonMeshTerrain(Loader loader, String heightMap) {
@@ -146,11 +139,9 @@ public class Terrain {
 					for (int i = 0; i < 6; i++) {
 						vertices[startingVerticeIndex + 1 + i * 3] = height;
 					}
-					Vector3f center = new Vector3f(referencePointX + HEXAGON_HALF_SQRTHREE_LENGTH, height,
-							referencePointZ + HEXAGON_SIDE_LENGTH);
+					Vector3f center = new Vector3f(referencePointX + HEXAGON_HALF_SQRTHREE_LENGTH, height, referencePointZ + HEXAGON_SIDE_LENGTH);
 					for (int i = 0; i < 6; i++) {
-						Vector3f vertice = new Vector3f(vertices[startingVerticeIndex + i * 3], height,
-								vertices[startingVerticeIndex + i * 3 + 2]);
+						Vector3f vertice = new Vector3f(vertices[startingVerticeIndex + i * 3], height, vertices[startingVerticeIndex + i * 3 + 2]);
 						Vector3f normal = calculateHexagonMeshNormal(center, vertice);
 //						normal = new Vector3f(0, 1, 0);
 						normals[startingVerticeIndex + i * 3] = normal.x;
@@ -159,10 +150,8 @@ public class Terrain {
 					}
 					int startingTextureIndex = 12 * (rowNumber * gridSizeX + columnNumber);
 					for (int i = 0; i < 6; i++) {
-						textureCoords[startingTextureIndex + i * 2] = vertices[startingVerticeIndex + i * 3]
-								/ terrainSizeX;
-						textureCoords[startingTextureIndex + i * 2 + 1] = vertices[startingVerticeIndex + i * 3 + 2]
-								/ terrainSizeY;
+						textureCoords[startingTextureIndex + i * 2] = vertices[startingVerticeIndex + i * 3] / terrainSizeX;
+						textureCoords[startingTextureIndex + i * 2 + 1] = vertices[startingVerticeIndex + i * 3 + 2] / terrainSizeY;
 					}
 				}
 				rowNumber++;
@@ -203,17 +192,20 @@ public class Terrain {
 	}
 
 	public static Terrain findCurrentTerrain(float positionX, float positionZ, Terrain[][] terrains) {
-		float terrainsX = positionX / Terrain.X_SIZE;
-		float terrainsZ = positionZ / Terrain.Z_SIZE;
-		int terrainGridX = (int) Math.floor(terrainsX);
-		int terrainGridZ = (int) Math.floor(terrainsZ);
-		Terrain[] possibleTerrains = new Terrain[9];
-		for() {
-			
-		}
-		for (Terrain possibleTerrain : possibleTerrains) {
-
-		}
+//		float terrainsX = positionX / Terrain.X_SIZE;
+//		float terrainsZ = positionZ / Terrain.Z_SIZE;
+//		int terrainGridX = (int) Math.floor(terrainsX);
+//		int terrainGridZ = (int) Math.floor(terrainsZ);
+//		Terrain[] possibleTerrains = new Terrain[9];
+//		int index = 0;
+//		for (int i = -1; i < 2; i++) {
+//			for (int j = -1; j < 2; j++) {
+//				possibleTerrains[index] = ;
+//			}
+//		}
+//		for (Terrain possibleTerrain : possibleTerrains) {
+//
+//		}
 		return terrains[0][0];
 	}
 
@@ -222,24 +214,24 @@ public class Terrain {
 		float r = (2f / 3 * y) / HEXAGON_SIDE_LENGTH;
 		return cubeRound(q, 0, r);
 	}
-	
+
 	private float[] cubeRound(float x, float y, float z) {
-		    float rx = Math.round(x);
-		    float ry = Math.round(y);
-		    float rz = Math.round(z);
+		float rx = Math.round(x);
+		float ry = Math.round(y);
+		float rz = Math.round(z);
 
-		    float x_diff = Math.abs(rx - x);
-		    float y_diff = Math.abs(ry - y);
-		    float z_diff = Math.abs(rz - z);
+		float x_diff = Math.abs(rx - x);
+		float y_diff = Math.abs(ry - y);
+		float z_diff = Math.abs(rz - z);
 
-		    if (x_diff > y_diff && x_diff > z_diff)
-		        rx = -ry-rz;
-		    else if (y_diff > z_diff)
-		        ry = -rx-rz;
-		    else
-		        rz = -rx-ry;
+		if (x_diff > y_diff && x_diff > z_diff)
+			rx = -ry - rz;
+		else if (y_diff > z_diff)
+			ry = -rx - rz;
+		else
+			rz = -rx - ry;
 
-		    return new float[]{rx, ry, rz};
+		return new float[] { rx, ry, rz };
 	}
 
 }
