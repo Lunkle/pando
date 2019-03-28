@@ -47,7 +47,7 @@ public class MainGameLoop {
 
 		List<Entity> ferns = new ArrayList<Entity>();
 		List<Entity> oaks = new ArrayList<Entity>();
-		ArrayList<Terrain> terrains = new ArrayList<Terrain>();
+		Terrain[][] terrains = new Terrain[10][10];
 
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
 		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("dirt"));
@@ -57,20 +57,23 @@ public class MainGameLoop {
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
-		terrains.add(new Terrain(0, 0, loader, texturePack, blendMap, "map"));
-//		terrains.add(new Terrain(1, 0, loader, texturePack, blendMap, "heightmap"));
+		for (int i = 0; i < terrains.length; i++) {
+			for (int j = 0; j < terrains[i].length; j++) {
+				terrains[j][i] = (new Terrain(j, i, loader, texturePack, blendMap, "map"));
+			}
+		}
 
 		Random random = new Random();
 		for (int i = 0; i < 50; i++) {
 			float entityX = random.nextFloat() * 800;
 			float entityZ = random.nextFloat() * 800;
-			float entityY = findCurrentTerrain(entityX, entityZ, terrains).getHeightOfTriangleMeshTerrain(entityX, entityZ);
+			float entityY = Terrain.findCurrentTerrain(entityX, entityZ, terrains).getHeightOfHexagonMeshTerrain(entityX, entityZ);
 			ferns.add(new Entity(fernModel, random.nextInt(4), new Vector3f(entityX, entityY, entityZ), 0, 0, 0, 3));
 		}
 		for (int i = 0; i < 5000; i++) {
 			float entityX = random.nextFloat() * 800;
 			float entityZ = random.nextFloat() * 800;
-			float entityY = findCurrentTerrain(entityX, entityZ, terrains).getHeightOfTriangleMeshTerrain(entityX, entityZ);
+			float entityY = Terrain.findCurrentTerrain(entityX, entityZ, terrains).getHeightOfHexagonMeshTerrain(entityX, entityZ);
 			oaks.add(new Entity(oakTreeStage1Model, new Vector3f(entityX, entityY, entityZ), 0, random.nextFloat() * 360, 0, 3));
 		}
 
@@ -92,12 +95,14 @@ public class MainGameLoop {
 		GUIRenderer guiRenderer = new GUIRenderer(loader);
 
 		while (!Display.isCloseRequested()) {
-			Terrain playerTerrain = findCurrentTerrain(player.getPosition().x, player.getPosition().z, terrains);
+			Terrain playerTerrain = Terrain.findCurrentTerrain(player.getPosition().x, player.getPosition().z, terrains);
 			player.move(playerTerrain);
 			camera.move();
 			masterRenderer.processEntity(player);
-			for (Terrain terrain : terrains) {
-				masterRenderer.processTerrain(terrain);
+			for (Terrain[] terrainArray : terrains) {
+				for (Terrain terrain : terrainArray) {
+					masterRenderer.processTerrain(terrain);
+				}
 			}
 //			for (Entity entity : ferns) {
 //				masterRenderer.processEntity(entity);
@@ -115,15 +120,6 @@ public class MainGameLoop {
 		loader.cleanUp();
 		DisplayManager.closeDisplay();
 
-	}
-
-	private static Terrain findCurrentTerrain(float playerX, float playerZ, ArrayList<Terrain> terrains) {
-		for (Terrain terrain : terrains) {
-			if (playerX > terrain.getX() && playerX < terrain.getX() + Terrain.SIZE && playerZ > terrain.getZ() && playerZ < terrain.getZ() + Terrain.SIZE) {
-				return terrain;
-			}
-		}
-		return terrains.get(0);
 	}
 
 }

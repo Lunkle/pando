@@ -1,13 +1,9 @@
 package terrains;
 
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
-
-import javax.imageio.ImageIO;
 
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -20,12 +16,13 @@ import toolbox.Maths;
 
 public class Terrain {
 
-	public static final float SIZE = 800;
-	public static final float HEXAGON_SIDE_LENGTH = 5;
-	public static final float HEXAGON_HALF_SQRTHREE_LENGTH = HEXAGON_SIDE_LENGTH * (float) Math.sqrt(3) / 2;
-	public static final float HEXAGON_SQRTHREE_LENGTH = HEXAGON_HALF_SQRTHREE_LENGTH * 2;
-	private static final float MAX_HEIGHT = 40;
-	private static final float MAX_PIXEL_COLOUR = 256 * 256 * 256;
+	public static final float NUM_HEXAGONS_X = 20;
+	public static final float NUM_HEXAGONS_Y = 20;
+	public static final float HEXAGON_SIDE_LENGTH = 1;
+	public static final float HEXAGON_SQRTHREE_LENGTH = HEXAGON_SIDE_LENGTH * (float) Math.sqrt(3);
+	public static final float HEXAGON_HALF_SQRTHREE_LENGTH = HEXAGON_SQRTHREE_LENGTH / 2;
+	public static final float X_SIZE = NUM_HEXAGONS_X * HEXAGON_SQRTHREE_LENGTH;
+	public static final float Z_SIZE = (1.5f * NUM_HEXAGONS_Y + 0.5f) * HEXAGON_SIDE_LENGTH;
 
 	private float x;
 	private float z;
@@ -39,10 +36,10 @@ public class Terrain {
 	public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texture, TerrainTexture blendMap, String heightMap) {
 		texturePack = texture;
 		this.blendMap = blendMap;
-		x = gridX * SIZE;
-		z = gridZ * SIZE;
+		x = gridX * X_SIZE;
+		z = gridZ * X_SIZE;
 //		gridSquareSize = SIZE / (float) (heights.length - 1);
-		TerrainGen gen = new TerrainGen(20, 20, "map", "res");
+		TerrainGen gen = new TerrainGen(600, 600, "map", "res");
 		gen.makeDefaultFile();
 		model = generateHexagonMeshTerrain(loader, heightMap);
 	}
@@ -70,29 +67,11 @@ public class Terrain {
 	public float getHeightOfHexagonMeshTerrain(float worldX, float worldZ) {
 		float terrainX = worldX - this.x;
 		float terrainZ = worldZ - this.z;
-		int gridX = (int) Math.floor(terrainX / gridSquareSize);
-		int gridZ = (int) Math.floor(terrainZ / gridSquareSize);
+		int gridZ = (int) Math.floor((terrainZ - HEXAGON_SIDE_LENGTH / 2) / gridSquareSize);
+		float offset = HEXAGON_HALF_SQRTHREE_LENGTH * (gridZ % 2);
+		int gridX = (int) Math.floor((terrainX - offset) / gridSquareSize);
 		if (gridX < 0 || gridX > heights.length - 1 || gridZ < 0 || gridZ > heights.length - 1) {
-			return 0;
-		}
-		float xCoord = (terrainX % gridSquareSize) / gridSquareSize;
-		float yCoord = (terrainX % gridSquareSize) / gridSquareSize;
-		float result;
-		if (xCoord <= (1 - yCoord)) {
-			result = Maths.barryCentric(new Vector3f(0, heights[gridX][gridZ], 0), new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(0, heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, yCoord));
-		} else {
-			result = Maths.barryCentric(new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(1, heights[gridX + 1][gridZ + 1], 1), new Vector3f(0, heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, yCoord));
-		}
-		return result;
-	}
-
-	public float getHeightOfTriangleMeshTerrain(float worldX, float worldZ) {
-		float terrainX = worldX - this.x;
-		float terrainZ = worldZ - this.z;
-		int gridX = (int) Math.floor(terrainX / gridSquareSize);
-		int gridZ = (int) Math.floor(terrainZ / gridSquareSize);
-		if (gridX < 0 || gridX > heights.length - 1 || gridZ < 0 || gridZ > heights.length - 1) {
-			return 0;
+//			return null;
 		}
 		float xCoord = (terrainX % gridSquareSize) / gridSquareSize;
 		float yCoord = (terrainX % gridSquareSize) / gridSquareSize;
@@ -141,7 +120,7 @@ public class Terrain {
 			while ((line = reader.readLine()) != null) {
 				data = Arrays.stream(line.split(",")).mapToInt(Integer::parseInt).toArray();
 				for (int columnNumber = 0; columnNumber < data.length; columnNumber++) {
-					int height = data[columnNumber];
+					float height = data[columnNumber] / 2.0f;
 					heights[rowNumber][columnNumber] = height;
 					float referencePointX = HEXAGON_SQRTHREE_LENGTH * (columnNumber + (isOffsetFromLeft ? 0.5f : 0));
 					float referencePointZ = 1.5f * HEXAGON_SIDE_LENGTH * rowNumber;
@@ -165,7 +144,7 @@ public class Terrain {
 					for (int i = 0; i < 6; i++) {
 						Vector3f vertice = new Vector3f(vertices[startingVerticeIndex + i * 3], height, vertices[startingVerticeIndex + i * 3 + 2]);
 						Vector3f normal = calculateHexagonMeshNormal(center, vertice);
-						normal = new Vector3f(0, 1, 0);
+//						normal = new Vector3f(0, 1, 0);
 						normals[startingVerticeIndex + i * 3] = normal.x;
 						normals[startingVerticeIndex + i * 3 + 1] = normal.y;
 						normals[startingVerticeIndex + i * 3 + 2] = normal.z;
@@ -182,83 +161,22 @@ public class Terrain {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		int[] indices = new int[12 * count];
+		int hexSideIndicesCount = 3 * (gridSizeX - 1) * (gridSizeY - 1) + gridSizeX + gridSizeY - 2;
+		int[] indices = new int[12 * count + hexSideIndicesCount];
+		int startingIndiceIndex = 0;
+		int startingVerticeIndex = 0;
+		int[] hexIndiceArray = new int[] { 0, 2, 4, 0, 1, 2, 2, 3, 4, 0, 4, 5 };
 		for (int y = 0; y < gridSizeY; y++) {
 			for (int x = 0; x < gridSizeX; x++) {
-				int startingIndiceIndex = 12 * (y * gridSizeX + x);
-				int startingVerticeIndex = 6 * (y * gridSizeX + x);
-				indices[startingIndiceIndex] = startingVerticeIndex;
-				indices[startingIndiceIndex + 1] = startingVerticeIndex + 2;
-				indices[startingIndiceIndex + 2] = startingVerticeIndex + 4;
-				indices[startingIndiceIndex + 3] = startingVerticeIndex;
-				indices[startingIndiceIndex + 4] = startingVerticeIndex + 1;
-				indices[startingIndiceIndex + 5] = startingVerticeIndex + 2;
-				indices[startingIndiceIndex + 6] = startingVerticeIndex + 2;
-				indices[startingIndiceIndex + 7] = startingVerticeIndex + 3;
-				indices[startingIndiceIndex + 8] = startingVerticeIndex + 4;
-				indices[startingIndiceIndex + 9] = startingVerticeIndex;
-				indices[startingIndiceIndex + 10] = startingVerticeIndex + 4;
-				indices[startingIndiceIndex + 11] = startingVerticeIndex + 5;
+				startingVerticeIndex += 6;
+				for (int i = 0; i < 12; i++) {
+					indices[startingIndiceIndex++] = startingVerticeIndex + hexIndiceArray[i];
+				}
 			}
 		}
-//		for (float vertice : vertices) {
-//			System.out.println(vertice); 
-//		}
-		return loader.loadToVAO(vertices, textureCoords, normals, indices);
-	}
-
-	private RawModel generateTriangleMeshTerrain(Loader loader, String heightMap) {
-
-		BufferedImage image = null;
-		try {
-			image = ImageIO.read(new File("res/" + heightMap + ".png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		int vertexCountX = image.getWidth();
-		int vertexCountY = image.getHeight();
-
-		heights = new float[vertexCountY][vertexCountX];
-
-		int count = vertexCountX * vertexCountY;
-		float[] vertices = new float[count * 3];
-		float[] normals = new float[count * 3];
-		float[] textureCoords = new float[count * 2];
-		int[] indices = new int[6 * (vertexCountX - 1) * (vertexCountY - 1)];
-		int vertexPointer = 0;
-		for (int i = 0; i < vertexCountY; i++) {
-			for (int j = 0; j < vertexCountX; j++) {
-				// Calculating vertices
-				float height = getHeight(j, i, image);
-				heights[j][i] = height;
-				vertices[vertexPointer * 3] = (float) j / ((float) vertexCountX - 1) * SIZE;
-				vertices[vertexPointer * 3 + 1] = height;
-				vertices[vertexPointer * 3 + 2] = (float) i / ((float) vertexCountY - 1) * SIZE;
-				// Calculating normals
-				Vector3f normal = calculateTriangleMeshNormal(j, i, image);
-				normals[vertexPointer * 3] = normal.x;
-				normals[vertexPointer * 3 + 1] = normal.y;
-				normals[vertexPointer * 3 + 2] = normal.z;
-				// Calculating texture coordinates
-				textureCoords[vertexPointer * 2] = (float) j / ((float) vertexCountX - 1);
-				textureCoords[vertexPointer * 2 + 1] = (float) i / ((float) vertexCountY - 1);
-				vertexPointer++;
-			}
-		}
-		int pointer = 0;
-		for (int gz = 0; gz < vertexCountY - 1; gz++) {
-			for (int gx = 0; gx < vertexCountX - 1; gx++) {
-				int topLeft = (gz * vertexCountX) + gx;
-				int topRight = topLeft + 1;
-				int bottomLeft = ((gz + 1) * vertexCountX) + gx;
-				int bottomRight = bottomLeft + 1;
-				indices[pointer++] = topLeft;
-				indices[pointer++] = bottomLeft;
-				indices[pointer++] = topRight;
-				indices[pointer++] = topRight;
-				indices[pointer++] = bottomLeft;
-				indices[pointer++] = bottomRight;
+		for (int i = 0; i < gridSizeY - 1; i++) {
+			for (int j = 0; j < gridSizeX - 1; j++) {
+//				indice[startingIndiceIndex];
 			}
 		}
 		return loader.loadToVAO(vertices, textureCoords, normals, indices);
@@ -269,30 +187,24 @@ public class Terrain {
 		centerToPoint = Vector3f.sub(vertice, center, null);
 		centerToPoint.normalise();
 		Vector3f normalVector = null;
-		normalVector = Vector3f.add(centerToPoint, new Vector3f(0, 1, 0), null);
+		normalVector = Vector3f.add(centerToPoint, new Vector3f(0, 5, 0), null);
 		normalVector.normalise();
 		return normalVector;
 	}
 
-	// Optimize this because we are calculating the same vertices over and over
-	// again
-	private Vector3f calculateTriangleMeshNormal(int x, int z, BufferedImage image) {
-		float heightL = getHeight(x - 1, z, image);
-		float heightR = getHeight(x + 1, z, image);
-		float heightU = getHeight(x, z - 1, image);
-		float heightD = getHeight(x, z + 1, image);
-		Vector3f normal = new Vector3f(heightL - heightR, 2f, heightU - heightD);
-		normal.normalise();
-		return normal;
-	}
-
-	private float getHeight(int x, int z, BufferedImage image) {
-		if (x < 0 || x > image.getWidth() - 1 || z < 0 || z > image.getHeight() - 1) {
-			return 0;
+	public static Terrain findCurrentTerrain(float positionX, float positionZ, Terrain[][] terrains) {
+		float terrainsX = positionX / Terrain.X_SIZE;
+		float terrainsZ = positionZ / Terrain.Z_SIZE;
+		int terrainGridX = (int) Math.floor(terrainsX);
+		int terrainGridZ = (int) Math.floor(terrainsZ);
+		Terrain[] possibleTerrains = new Terrain[9];
+		for() {
+			
 		}
-		float height = image.getRGB(x, z);
-		height = MAX_HEIGHT * (height) / MAX_PIXEL_COLOUR + 0.5f;
-		return height;
+		for (Terrain possibleTerrain : possibleTerrains) {
+
+		}
+		return terrains[0][0];
 	}
 
 }
