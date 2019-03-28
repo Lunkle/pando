@@ -36,9 +36,9 @@ public class TerrainGen {
 			// Write y lines of x zeros
 			for (int i = 0; i < y; i++) {
 				writer.write('\n');
-				writer.write("0");
+				writer.write("" + (i));
 				for (int j = 0; j < x - 1; j++) {
-					writer.write(",0");
+					writer.write("," + (i + j + 1));
 //					double height = (ImprovedNoise.noise(i * 100, j * 100, 0) * 500);
 //					System.out.println(height);
 //					writer.write(height + ((j == x - 1) ? "" : ","));
