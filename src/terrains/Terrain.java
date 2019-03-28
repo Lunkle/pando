@@ -36,7 +36,8 @@ public class Terrain {
 	private float[][] heights;
 	float gridSquareSize;
 
-	public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texture, TerrainTexture blendMap, String heightMap) {
+	public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texture, TerrainTexture blendMap,
+			String heightMap) {
 		texturePack = texture;
 		this.blendMap = blendMap;
 		x = gridX * SIZE;
@@ -79,9 +80,13 @@ public class Terrain {
 		float yCoord = (terrainX % gridSquareSize) / gridSquareSize;
 		float result;
 		if (xCoord <= (1 - yCoord)) {
-			result = Maths.barryCentric(new Vector3f(0, heights[gridX][gridZ], 0), new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(0, heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, yCoord));
+			result = Maths.barryCentric(new Vector3f(0, heights[gridX][gridZ], 0),
+					new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(0, heights[gridX][gridZ + 1], 1),
+					new Vector2f(xCoord, yCoord));
 		} else {
-			result = Maths.barryCentric(new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(1, heights[gridX + 1][gridZ + 1], 1), new Vector3f(0, heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, yCoord));
+			result = Maths.barryCentric(new Vector3f(1, heights[gridX + 1][gridZ], 0),
+					new Vector3f(1, heights[gridX + 1][gridZ + 1], 1), new Vector3f(0, heights[gridX][gridZ + 1], 1),
+					new Vector2f(xCoord, yCoord));
 		}
 		return result;
 	}
@@ -98,9 +103,13 @@ public class Terrain {
 		float yCoord = (terrainX % gridSquareSize) / gridSquareSize;
 		float result;
 		if (xCoord <= (1 - yCoord)) {
-			result = Maths.barryCentric(new Vector3f(0, heights[gridX][gridZ], 0), new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(0, heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, yCoord));
+			result = Maths.barryCentric(new Vector3f(0, heights[gridX][gridZ], 0),
+					new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(0, heights[gridX][gridZ + 1], 1),
+					new Vector2f(xCoord, yCoord));
 		} else {
-			result = Maths.barryCentric(new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(1, heights[gridX + 1][gridZ + 1], 1), new Vector3f(0, heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, yCoord));
+			result = Maths.barryCentric(new Vector3f(1, heights[gridX + 1][gridZ], 0),
+					new Vector3f(1, heights[gridX + 1][gridZ + 1], 1), new Vector3f(0, heights[gridX][gridZ + 1], 1),
+					new Vector2f(xCoord, yCoord));
 		}
 		return result;
 	}
@@ -161,9 +170,11 @@ public class Terrain {
 					for (int i = 0; i < 6; i++) {
 						vertices[startingVerticeIndex + 1 + i * 3] = height;
 					}
-					Vector3f center = new Vector3f(referencePointX + HEXAGON_HALF_SQRTHREE_LENGTH, height, referencePointZ + HEXAGON_SIDE_LENGTH);
+					Vector3f center = new Vector3f(referencePointX + HEXAGON_HALF_SQRTHREE_LENGTH, height,
+							referencePointZ + HEXAGON_SIDE_LENGTH);
 					for (int i = 0; i < 6; i++) {
-						Vector3f vertice = new Vector3f(vertices[startingVerticeIndex + i * 3], height, vertices[startingVerticeIndex + i * 3 + 2]);
+						Vector3f vertice = new Vector3f(vertices[startingVerticeIndex + i * 3], height,
+								vertices[startingVerticeIndex + i * 3 + 2]);
 						Vector3f normal = calculateHexagonMeshNormal(center, vertice);
 						normal = new Vector3f(0, 1, 0);
 						normals[startingVerticeIndex + i * 3] = normal.x;
@@ -172,8 +183,10 @@ public class Terrain {
 					}
 					int startingTextureIndex = 12 * (rowNumber * gridSizeX + columnNumber);
 					for (int i = 0; i < 6; i++) {
-						textureCoords[startingTextureIndex + i * 2] = vertices[startingVerticeIndex + i * 3] / terrainSizeX;
-						textureCoords[startingTextureIndex + i * 2 + 1] = vertices[startingVerticeIndex + i * 3 + 2] / terrainSizeY;
+						textureCoords[startingTextureIndex + i * 2] = vertices[startingVerticeIndex + i * 3]
+								/ terrainSizeX;
+						textureCoords[startingTextureIndex + i * 2 + 1] = vertices[startingVerticeIndex + i * 3 + 2]
+								/ terrainSizeY;
 					}
 				}
 				rowNumber++;
@@ -293,6 +306,31 @@ public class Terrain {
 		float height = image.getRGB(x, z);
 		height = MAX_HEIGHT * (height) / MAX_PIXEL_COLOUR + 0.5f;
 		return height;
+	}
+
+	public float[] pixel_to_pointy_hex(float x, float y) {
+		float q = (float) ((Math.sqrt(3) / 3 * x - 1f / 3 * y) / HEXAGON_SIDE_LENGTH);
+		float r = (2f / 3 * y) / HEXAGON_SIDE_LENGTH;
+		return cubeRound(q, 0, r);
+	}
+	
+	private float[] cubeRound(float x, float y, float z) {
+		    float rx = Math.round(x);
+		    float ry = Math.round(y);
+		    float rz = Math.round(z);
+
+		    float x_diff = Math.abs(rx - x);
+		    float y_diff = Math.abs(ry - y);
+		    float z_diff = Math.abs(rz - z);
+
+		    if (x_diff > y_diff && x_diff > z_diff)
+		        rx = -ry-rz;
+		    else if (y_diff > z_diff)
+		        ry = -rx-rz;
+		    else
+		        rz = -rx-ry;
+
+		    return new float[]{rx, ry, rz};
 	}
 
 }
