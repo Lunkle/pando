@@ -31,7 +31,8 @@ public class Terrain {
 	private float[][] heights;
 	float gridSquareSize;
 
-	public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texture, TerrainTexture blendMap, String heightMap) {
+	public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texture, TerrainTexture blendMap,
+			String heightMap) {
 		texturePack = texture;
 		this.blendMap = blendMap;
 		x = gridX * X_SIZE;
@@ -167,9 +168,11 @@ public class Terrain {
 					for (int i = 0; i < 6; i++) {
 						vertices[startingVerticeIndex + 1 + i * 3] = height;
 					}
-					Vector3f center = new Vector3f(referencePointX + HEXAGON_HALF_SQRTHREE_LENGTH, height, referencePointZ + HEXAGON_SIDE_LENGTH);
+					Vector3f center = new Vector3f(referencePointX + HEXAGON_HALF_SQRTHREE_LENGTH, height,
+							referencePointZ + HEXAGON_SIDE_LENGTH);
 					for (int i = 0; i < 6; i++) {
-						Vector3f vertice = new Vector3f(vertices[startingVerticeIndex + i * 3], height, vertices[startingVerticeIndex + i * 3 + 2]);
+						Vector3f vertice = new Vector3f(vertices[startingVerticeIndex + i * 3], height,
+								vertices[startingVerticeIndex + i * 3 + 2]);
 						Vector3f normal = calculateHexagonMeshNormal(center, vertice);
 //						normal = new Vector3f(0, 1, 0);
 						normals[startingVerticeIndex + i * 3] = normal.x;
@@ -178,8 +181,10 @@ public class Terrain {
 					}
 					int startingTextureIndex = 12 * (rowNumber * gridSizeX + columnNumber);
 					for (int i = 0; i < 6; i++) {
-						textureCoords[startingTextureIndex + i * 2] = vertices[startingVerticeIndex + i * 3] / terrainSizeX;
-						textureCoords[startingTextureIndex + i * 2 + 1] = vertices[startingVerticeIndex + i * 3 + 2] / terrainSizeY;
+						textureCoords[startingTextureIndex + i * 2] = vertices[startingVerticeIndex + i * 3]
+								/ terrainSizeX;
+						textureCoords[startingTextureIndex + i * 2 + 1] = vertices[startingVerticeIndex + i * 3 + 2]
+								/ terrainSizeY;
 					}
 				}
 				rowNumber++;
@@ -212,7 +217,7 @@ public class Terrain {
 	public float[] pixel_to_pointy_hex(float x, float y) {
 		float q = (float) ((Math.sqrt(3) / 3 * x - 1f / 3 * y) / HEXAGON_SIDE_LENGTH);
 		float r = (2f / 3 * y) / HEXAGON_SIDE_LENGTH;
-		return cubeRound(q, 0, r);
+		return hexRound(new float[] {q,r});
 	}
 
 	private float[] cubeRound(float x, float y, float z) {
@@ -234,4 +239,22 @@ public class Terrain {
 		return new float[] { rx, ry, rz };
 	}
 
+	private float[] axial_to_cube(float[] hex) {
+		float x = hex[0];
+		float z = hex[1];
+		float y = -x - z;
+		return new float[] { x, y, z };
+	}
+
+	private float[] cube_to_axial(float[] cube) {
+	    float q = cube[0];
+	    float r = cube[2];
+	    return new float[] {q,r};
+	}
+	
+	private float[] hexRound(float[] hex) {
+		float[] inCube = axial_to_cube(hex);
+		float[] roundCube = cubeRound(inCube[0], inCube[1], inCube[2]);
+		return cube_to_axial(roundCube);
+	}
 }
