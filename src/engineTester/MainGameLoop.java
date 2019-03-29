@@ -47,6 +47,7 @@ public class MainGameLoop {
 
 		List<Entity> ferns = new ArrayList<Entity>();
 		List<Entity> oaks = new ArrayList<Entity>();
+		Entity centerSprout = new Entity(oakTreeStage1Model, new Vector3f(0,0,0), 0,0,0,5);
 		Terrain[][] terrains = new Terrain[1][1];
 
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
@@ -88,7 +89,7 @@ public class MainGameLoop {
 		GUITexture gui = new GUITexture(loader.loadTexture("dukemascot"), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
 		guis.add(gui);
 
-		Player player = new Player(stanfordBunnyModel, new Vector3f(100, 0, 150), 0.0f, 0.0f, 0.0f, 1.0f);
+		Player player = new Player(stanfordBunnyModel, new Vector3f(10, 0, 15), 0.0f, 0.0f, 0.0f, 0.5f);
 		ThirdPersonCamera camera = new ThirdPersonCamera(player);
 
 		MasterRenderer masterRenderer = new MasterRenderer();
@@ -104,12 +105,17 @@ public class MainGameLoop {
 					masterRenderer.processTerrain(terrain);
 				}
 			}
-//			for (Entity entity : ferns) {
-//				masterRenderer.processEntity(entity);
-//			}
-//			for (Entity entity : oaks) {
-//				masterRenderer.processEntity(entity);
-//			}
+			
+			Vector3f pPos = player.getPosition();
+			float[] coords = terrains[0][0].pixel_to_pointy_hex(pPos.x, pPos.z);
+			centerSprout.setPosition(new Vector3f(coords[0] * Terrain.HEXAGON_SQRTHREE_LENGTH + Terrain.HEXAGON_HALF_SQRTHREE_LENGTH , 
+												  0, 
+												  coords[2] * 2 * Terrain.HEXAGON_SIDE_LENGTH + Terrain.HEXAGON_SIDE_LENGTH));
+			
+			System.out.println(pPos + "\t" + centerSprout.getPosition());
+			
+			masterRenderer.processEntity(centerSprout);
+			
 			masterRenderer.render(light, camera);
 			guiRenderer.render(guis);
 			DisplayManager.updateDisplay();

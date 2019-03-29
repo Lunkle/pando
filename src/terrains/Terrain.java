@@ -16,7 +16,7 @@ public class Terrain {
 
 	public static final float NUM_HEXAGONS_X = 20;
 	public static final float NUM_HEXAGONS_Y = 20;
-	public static final float HEXAGON_SIDE_LENGTH = 1;
+	public static final float HEXAGON_SIDE_LENGTH = 5;
 	public static final float HEXAGON_SQRTHREE_LENGTH = HEXAGON_SIDE_LENGTH * (float) Math.sqrt(3);
 	public static final float HEXAGON_HALF_SQRTHREE_LENGTH = HEXAGON_SQRTHREE_LENGTH / 2;
 	public static final float X_SIZE = NUM_HEXAGONS_X * HEXAGON_SQRTHREE_LENGTH;
