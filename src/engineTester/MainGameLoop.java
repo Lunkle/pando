@@ -47,7 +47,7 @@ public class MainGameLoop {
 
 		List<Entity> ferns = new ArrayList<Entity>();
 		List<Entity> oaks = new ArrayList<Entity>();
-		Entity centerSprout = new Entity(oakTreeStage1Model, new Vector3f(0,0,0), 0,0,0,5);
+		Entity centerSprout = new Entity(oakTreeStage1Model, new Vector3f(0, 0, 0), 0, 0, 0, 5);
 		Terrain[][] terrains = new Terrain[1][1];
 
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
@@ -105,17 +105,15 @@ public class MainGameLoop {
 					masterRenderer.processTerrain(terrain);
 				}
 			}
-			
+
 			Vector3f pPos = player.getPosition();
 			float[] coords = terrains[0][0].pixel_to_pointy_hex(pPos.x, pPos.z);
-			centerSprout.setPosition(new Vector3f(coords[0] * Terrain.HEXAGON_SQRTHREE_LENGTH + Terrain.HEXAGON_HALF_SQRTHREE_LENGTH , 
-												  0, 
-												  coords[2] * 2 * Terrain.HEXAGON_SIDE_LENGTH + Terrain.HEXAGON_SIDE_LENGTH));
-			
-			System.out.println(pPos + "\t" + centerSprout.getPosition());
-			
+			centerSprout.setPosition(new Vector3f(coords[0] * Terrain.HEXAGON_SQRTHREE_LENGTH + Terrain.HEXAGON_HALF_SQRTHREE_LENGTH, 0, coords[2] * 2 * Terrain.HEXAGON_SIDE_LENGTH + Terrain.HEXAGON_SIDE_LENGTH));
+
+//			System.out.println(pPos + "\t" + centerSprout.getPosition());
+
 			masterRenderer.processEntity(centerSprout);
-			
+
 			masterRenderer.render(light, camera);
 			guiRenderer.render(guis);
 			DisplayManager.updateDisplay();

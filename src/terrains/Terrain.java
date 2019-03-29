@@ -14,8 +14,8 @@ import textures.TerrainTexturePack;
 
 public class Terrain {
 
-	public static final float NUM_HEXAGONS_X = 20;
-	public static final float NUM_HEXAGONS_Y = 20;
+	public static final float NUM_HEXAGONS_X = 2;
+	public static final float NUM_HEXAGONS_Y = 2;
 	public static final float HEXAGON_SIDE_LENGTH = 5;
 	public static final float HEXAGON_SQRTHREE_LENGTH = HEXAGON_SIDE_LENGTH * (float) Math.sqrt(3);
 	public static final float HEXAGON_HALF_SQRTHREE_LENGTH = HEXAGON_SQRTHREE_LENGTH / 2;
@@ -37,7 +37,7 @@ public class Terrain {
 		x = gridX * X_SIZE;
 		z = gridZ * Z_SIZE;
 //		gridSquareSize = SIZE / (float) (heights.length - 1);
-		TerrainGen gen = new TerrainGen(20, 20, "map", "res");
+		TerrainGen gen = new TerrainGen(10, 10, "map", "res");
 		gen.makeDefaultFile();
 		model = generateHexagonMeshTerrain(loader, heightMap);
 	}
@@ -81,6 +81,34 @@ public class Terrain {
 //			result = Maths.barryCentric(new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(1, heights[gridX + 1][gridZ + 1], 1), new Vector3f(0, heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, yCoord));
 //		}
 		return 0;
+	}
+
+	private Vector3f calculateHexagonMeshNormal(Vector3f center, Vector3f vertice) {
+		Vector3f centerToPoint = null;
+		centerToPoint = Vector3f.sub(vertice, center, null);
+		centerToPoint.normalise();
+		Vector3f normalVector = null;
+		normalVector = Vector3f.add(centerToPoint, new Vector3f(0, 5, 0), null);
+		normalVector.normalise();
+		return normalVector;
+	}
+
+	public static Terrain findCurrentTerrain(float positionX, float positionZ, Terrain[][] terrains) {
+//		float terrainsX = positionX / Terrain.X_SIZE;
+//		float terrainsZ = positionZ / Terrain.Z_SIZE;
+//		int terrainGridX = (int) Math.floor(terrainsX);
+//		int terrainGridZ = (int) Math.floor(terrainsZ);
+//		Terrain[] possibleTerrains = new Terrain[9];
+//		int index = 0;
+//		for (int i = -1; i < 2; i++) {
+//			for (int j = -1; j < 2; j++) {
+//				possibleTerrains[index++] = terrains[terrainGridZ + i][terrainGridX + j];
+//			}
+//		}
+//		for (Terrain possibleTerrain : possibleTerrains) {
+//
+//		}
+		return terrains[0][0];
 	}
 
 	private RawModel generateHexagonMeshTerrain(Loader loader, String heightMap) {
@@ -167,10 +195,10 @@ public class Terrain {
 		int[] hexIndiceArray = new int[] { 0, 2, 4, 0, 1, 2, 2, 3, 4, 0, 4, 5 };
 		for (int y = 0; y < gridSizeY; y++) {
 			for (int x = 0; x < gridSizeX; x++) {
-				startingVerticeIndex += 6;
 				for (int i = 0; i < 12; i++) {
 					indices[startingIndiceIndex++] = startingVerticeIndex + hexIndiceArray[i];
 				}
+				startingVerticeIndex += 6;
 			}
 		}
 		for (int i = 0; i < gridSizeY - 1; i++) {
@@ -179,34 +207,6 @@ public class Terrain {
 			}
 		}
 		return loader.loadToVAO(vertices, textureCoords, normals, indices);
-	}
-
-	private Vector3f calculateHexagonMeshNormal(Vector3f center, Vector3f vertice) {
-		Vector3f centerToPoint = null;
-		centerToPoint = Vector3f.sub(vertice, center, null);
-		centerToPoint.normalise();
-		Vector3f normalVector = null;
-		normalVector = Vector3f.add(centerToPoint, new Vector3f(0, 5, 0), null);
-		normalVector.normalise();
-		return normalVector;
-	}
-
-	public static Terrain findCurrentTerrain(float positionX, float positionZ, Terrain[][] terrains) {
-//		float terrainsX = positionX / Terrain.X_SIZE;
-//		float terrainsZ = positionZ / Terrain.Z_SIZE;
-//		int terrainGridX = (int) Math.floor(terrainsX);
-//		int terrainGridZ = (int) Math.floor(terrainsZ);
-//		Terrain[] possibleTerrains = new Terrain[9];
-//		int index = 0;
-//		for (int i = -1; i < 2; i++) {
-//			for (int j = -1; j < 2; j++) {
-//				possibleTerrains[index] = ;
-//			}
-//		}
-//		for (Terrain possibleTerrain : possibleTerrains) {
-//
-//		}
-		return terrains[0][0];
 	}
 
 	public float[] pixel_to_pointy_hex(float x, float y) {
