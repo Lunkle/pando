@@ -28,21 +28,16 @@ public class TerrainGen {
 			// Write to a new file named fileName in location
 			writer = new BufferedWriter(new FileWriter(location + "/" + fileName + ".txt"));
 
-			// File metadata, might not be neccecary
-			writer.write(Integer.toString(x));
-			writer.write(" ");
-			writer.write(Integer.toString(y));
-
 			// Write y lines of x zeros
 			for (int i = 0; i < y; i++) {
-				writer.write('\n');
-				writer.write("" + 0);// (i));
+				writer.write("" + (i));
 				for (int j = 0; j < x - 1; j++) {
-					writer.write("," + 0);// (i + j + 1));
+					writer.write("," + (i + j + 1));
 //					double height = (ImprovedNoise.noise(i * 100, j * 100, 0) * 500);
 //					System.out.println(height);
 //					writer.write(height + ((j == x - 1) ? "" : ","));
 				}
+				writer.write(i == y - 1 ? "" : "\n");
 			}
 			writer.flush();
 			closeWriter(writer);

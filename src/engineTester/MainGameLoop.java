@@ -87,20 +87,18 @@ public class MainGameLoop {
 
 		Light light = new Light(new Vector3f(20000, 20000, 2000), new Vector3f(1, 1, 1));
 
-		ModelTexture whiteTexture = new ModelTexture(loader.loadTexture("white"));
-		ModelData stanfordBunnyData = OBJFileLoader.loadOBJ("bunny");
-		RawModel rawStanfordBunnyModel = loader.loadToVAO(stanfordBunnyData);
-		TexturedModel stanfordBunnyModel = new TexturedModel(rawStanfordBunnyModel, whiteTexture);
-
 		List<GUITexture> guis = new ArrayList<GUITexture>();
 		GUITexture gui = new GUITexture(loader.loadTexture("dukemascot"), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
-//		guis.add(gui);
+		guis.add(gui);
 
 		Player player = new Player(oakTreeStage1Model, new Vector3f(10, 0, 15), 0.0f, 0.0f, 0.0f, 0.5f);
 		ThirdPersonCamera camera = new ThirdPersonCamera(player);
 
 		MasterRenderer masterRenderer = new MasterRenderer();
 		GUIRenderer guiRenderer = new GUIRenderer(loader);
+
+//		TerrainGen gen = new TerrainGen(10, 10, "map", "res");
+//		gen.makeDefaultFile();
 
 		while (!Display.isCloseRequested()) {
 			player.move(terrains);
@@ -113,11 +111,8 @@ public class MainGameLoop {
 			}
 
 			Vector3f pPos = player.getPosition();
-//			float[] coords = Terrain.findHexCoords(pPos.x, pPos.z);
-			float[] coords = Terrain.getHexagon(pPos.x, pPos.z, terrains);
-			centerSprout.setPosition(new Vector3f((coords[1] % 2) * Terrain.HEXAGON_HALF_SQRTHREE_LENGTH + coords[0] * Terrain.HEXAGON_SQRTHREE_LENGTH + Terrain.HEXAGON_HALF_SQRTHREE_LENGTH, 0, coords[1] * 1.5f * Terrain.HEXAGON_SIDE_LENGTH + Terrain.HEXAGON_SIDE_LENGTH));
-
-			System.out.println("Position: " + pPos.x + " " + pPos.z);
+			Vector2f coords = Terrain.getHexagon(pPos.x, pPos.z, terrains);
+			centerSprout.setPosition(new Vector3f((coords.y % 2) * Terrain.HEXAGON_HALF_SQRTHREE_LENGTH + coords.x * Terrain.HEXAGON_SQRTHREE_LENGTH + Terrain.HEXAGON_HALF_SQRTHREE_LENGTH, 0, coords.y * 1.5f * Terrain.HEXAGON_SIDE_LENGTH + Terrain.HEXAGON_SIDE_LENGTH));
 
 			masterRenderer.processEntity(centerSprout);
 
