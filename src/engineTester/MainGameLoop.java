@@ -45,10 +45,13 @@ public class MainGameLoop {
 		RawModel rawOakTreeStage1Model = loader.loadToVAO(oakTreeStage1Data);
 		TexturedModel oakTreeStage1Model = new TexturedModel(rawOakTreeStage1Model, new ModelTexture(loader.loadTexture("oakTreeStage1")));
 
+//		ModelData oakTreeStage2Data = OBJFileLoader.loadOBJ("oakTreeStage2");
+//		RawModel rawOakTreeStage2Model = loader.loadToVAO(oakTreeStage2Data);
+//		TexturedModel oakTreeStage2Model = new TexturedModel(rawOakTreeStage2Model, new ModelTexture(loader.loadTexture("oakTreeStage2")));
+
 		List<Entity> ferns = new ArrayList<Entity>();
 		List<Entity> oaks = new ArrayList<Entity>();
 		Entity centerSprout = new Entity(oakTreeStage1Model, new Vector3f(0, 0, 0), 0, 0, 0, 5);
-		Terrain[][] terrains = new Terrain[1][1];
 
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
 		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("dirt"));
@@ -57,6 +60,8 @@ public class MainGameLoop {
 
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
+
+		Terrain[][] terrains = new Terrain[10][10];
 
 		for (int i = 0; i < terrains.length; i++) {
 			for (int j = 0; j < terrains[i].length; j++) {
@@ -68,13 +73,15 @@ public class MainGameLoop {
 		for (int i = 0; i < 50; i++) {
 			float entityX = random.nextFloat() * 800;
 			float entityZ = random.nextFloat() * 800;
-			float entityY = Terrain.findCurrentTerrain(entityX, entityZ, terrains).getHeightOfHexagonMeshTerrain(entityX, entityZ);
+//			float entityY = Terrain.getHeightOfHexagonMeshTerrain(entityX, entityZ, terrains);
+			float entityY = 0;
 			ferns.add(new Entity(fernModel, random.nextInt(4), new Vector3f(entityX, entityY, entityZ), 0, 0, 0, 3));
 		}
 		for (int i = 0; i < 5000; i++) {
 			float entityX = random.nextFloat() * 800;
 			float entityZ = random.nextFloat() * 800;
-			float entityY = Terrain.findCurrentTerrain(entityX, entityZ, terrains).getHeightOfHexagonMeshTerrain(entityX, entityZ);
+//			float entityY = Terrain.getHeightOfHexagonMeshTerrain(entityX, entityZ, terrains);
+			float entityY = 0;
 			oaks.add(new Entity(oakTreeStage1Model, new Vector3f(entityX, entityY, entityZ), 0, random.nextFloat() * 360, 0, 3));
 		}
 
@@ -87,17 +94,16 @@ public class MainGameLoop {
 
 		List<GUITexture> guis = new ArrayList<GUITexture>();
 		GUITexture gui = new GUITexture(loader.loadTexture("dukemascot"), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
-		guis.add(gui);
+//		guis.add(gui);
 
-		Player player = new Player(stanfordBunnyModel, new Vector3f(10, 0, 15), 0.0f, 0.0f, 0.0f, 0.5f);
+		Player player = new Player(oakTreeStage1Model, new Vector3f(10, 0, 15), 0.0f, 0.0f, 0.0f, 0.5f);
 		ThirdPersonCamera camera = new ThirdPersonCamera(player);
 
 		MasterRenderer masterRenderer = new MasterRenderer();
 		GUIRenderer guiRenderer = new GUIRenderer(loader);
 
 		while (!Display.isCloseRequested()) {
-			Terrain playerTerrain = Terrain.findCurrentTerrain(player.getPosition().x, player.getPosition().z, terrains);
-			player.move(playerTerrain);
+			player.move(terrains);
 			camera.move();
 			masterRenderer.processEntity(player);
 			for (Terrain[] terrainArray : terrains) {
@@ -107,10 +113,11 @@ public class MainGameLoop {
 			}
 
 			Vector3f pPos = player.getPosition();
-			float[] coords = terrains[0][0].pixel_to_pointy_hex(pPos.x, pPos.z);
-			centerSprout.setPosition(new Vector3f(coords[0] * Terrain.HEXAGON_SQRTHREE_LENGTH + Terrain.HEXAGON_HALF_SQRTHREE_LENGTH, 0, coords[1] * 2 * Terrain.HEXAGON_SIDE_LENGTH + Terrain.HEXAGON_SIDE_LENGTH));
+//			float[] coords = Terrain.findHexCoords(pPos.x, pPos.z);
+			float[] coords = Terrain.getHexagon(pPos.x, pPos.z, terrains);
+			centerSprout.setPosition(new Vector3f((coords[1] % 2) * Terrain.HEXAGON_HALF_SQRTHREE_LENGTH + coords[0] * Terrain.HEXAGON_SQRTHREE_LENGTH + Terrain.HEXAGON_HALF_SQRTHREE_LENGTH, 0, coords[1] * 1.5f * Terrain.HEXAGON_SIDE_LENGTH + Terrain.HEXAGON_SIDE_LENGTH));
 
-//			System.out.println(pPos + "\t" + centerSprout.getPosition());
+			System.out.println("Position: " + pPos.x + " " + pPos.z);
 
 			masterRenderer.processEntity(centerSprout);
 

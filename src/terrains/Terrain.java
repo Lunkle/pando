@@ -5,22 +5,25 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import models.RawModel;
 import renderEngine.Loader;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
+import toolbox.Maths;
 
 public class Terrain {
 
-	public static final float NUM_HEXAGONS_X = 2;
-	public static final float NUM_HEXAGONS_Y = 2;
+	public static final int NUM_HEXAGONS_X = 10;
+	public static final int NUM_HEXAGONS_Z = 10;
 	public static final float HEXAGON_SIDE_LENGTH = 5;
 	public static final float HEXAGON_SQRTHREE_LENGTH = HEXAGON_SIDE_LENGTH * (float) Math.sqrt(3);
 	public static final float HEXAGON_HALF_SQRTHREE_LENGTH = HEXAGON_SQRTHREE_LENGTH / 2;
+	public static final float HEXAGON_MINIMUM_TRIANGLE_SIZE = HEXAGON_SIDE_LENGTH * HEXAGON_HALF_SQRTHREE_LENGTH;
 	public static final float X_SIZE = NUM_HEXAGONS_X * HEXAGON_SQRTHREE_LENGTH;
-	public static final float Z_SIZE = (1.5f * NUM_HEXAGONS_Y + 0.5f) * HEXAGON_SIDE_LENGTH;
+	public static final float Z_SIZE = 1.5f * NUM_HEXAGONS_Z * HEXAGON_SIDE_LENGTH;
 
 	private float x;
 	private float z;
@@ -29,17 +32,15 @@ public class Terrain {
 	private TerrainTexture blendMap;
 
 	private float[][] heights;
-	float gridSquareSize;
 
-	public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texture, TerrainTexture blendMap,
-			String heightMap) {
+	public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texture, TerrainTexture blendMap, String heightMap) {
 		texturePack = texture;
 		this.blendMap = blendMap;
 		x = gridX * X_SIZE;
 		z = gridZ * Z_SIZE;
 //		gridSquareSize = SIZE / (float) (heights.length - 1);
-		TerrainGen gen = new TerrainGen(10, 10, "map", "res");
-		gen.makeDefaultFile();
+//		TerrainGen gen = new TerrainGen(10, 10, "map", "res");
+//		gen.makeDefaultFile();
 		model = generateHexagonMeshTerrain(loader, heightMap);
 	}
 
@@ -63,25 +64,133 @@ public class Terrain {
 		return blendMap;
 	}
 
-	public float getHeightOfHexagonMeshTerrain(float worldX, float worldZ) {
-//		float terrainX = worldX - this.x;
-//		float terrainZ = worldZ - this.z;
-//
-//		int gridZ = (int) Math.floor((terrainZ - HEXAGON_SIDE_LENGTH / 2) / gridSquareSize);
-//		float offset = HEXAGON_HALF_SQRTHREE_LENGTH * (gridZ % 2);
-//		int gridX = (int) Math.floor((terrainX - offset) / gridSquareSize);
-//		if (gridX < 0 || gridX > heights.length - 1 || gridZ < 0 || gridZ > heights.length - 1) {
-////			return null;
-//		}
-//		float xCoord = (terrainX % gridSquareSize) / gridSquareSize;
-//		float yCoord = (terrainX % gridSquareSize) / gridSquareSize;
-//		float result;
-//		if (xCoord <= (1 - yCoord)) {
-//			result = Maths.barryCentric(new Vector3f(0, heights[gridX][gridZ], 0), new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(0, heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, yCoord));
-//		} else {
-//			result = Maths.barryCentric(new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(1, heights[gridX + 1][gridZ + 1], 1), new Vector3f(0, heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, yCoord));
-//		}
+	public static float[] findHexCoords(float x, float y) {
+		int xh = (int) (x / HEXAGON_SQRTHREE_LENGTH);
+		int yh = (int) (y / (HEXAGON_SIDE_LENGTH * 1.5));
+
+		boolean evenY = yh % 2 == 0;
+
+		float cornerX = xh * HEXAGON_SQRTHREE_LENGTH + HEXAGON_HALF_SQRTHREE_LENGTH;
+		float cornerY = (float) (yh * 1.5 * HEXAGON_SIDE_LENGTH + (evenY ? 0 : 0.5 * HEXAGON_SIDE_LENGTH));
+
+		float slope;
+
+		try {
+			slope = (y - cornerY) / (x - cornerX);
+		} catch (ArithmeticException e) {
+			return new float[] { xh, (evenY ? yh : yh + 1) };
+		}
+
+		if (slope > TAN_PI_BY_SIX) {
+			if (evenY)
+				return new float[] { xh, yh };
+			return new float[] { xh, yh + 1 };
+		}
+
+		if (x > cornerX)
+			return new float[] { xh, yh };
+		return new float[] { xh - 1, yh };
+
+	}
+
+	public static final float TAN_PI_BY_SIX = (float) (1f / Math.sqrt(3));
+
+	public static float[] getHexagon(float worldX, float worldZ, Terrain[][] terrains) {
+		int worldHexZ = (int) Math.floor(worldZ / (HEXAGON_SIDE_LENGTH * 1.5));
+		int isOffset = worldHexZ % 2;
+		float xOffset = HEXAGON_HALF_SQRTHREE_LENGTH * isOffset;
+		int worldHexX = (int) Math.floor((worldX - xOffset) / HEXAGON_SQRTHREE_LENGTH);
+
+		float tileZ = worldZ % (HEXAGON_SIDE_LENGTH * 1.5f);
+		int terrainGridX = (int) Math.floor(worldHexX / NUM_HEXAGONS_X);
+		int terrainGridZ = (int) Math.floor(worldHexZ / NUM_HEXAGONS_Z);
+
+		if (terrainGridX < 0 || terrainGridX > terrains[0].length || terrainGridZ < 0 || terrainGridZ > terrains.length) {
+			System.out.println("out of bounds");
+			return new float[] { 0 };
+		}
+
+		int terrainHexX = worldHexX % NUM_HEXAGONS_X;
+		int terrainHexZ = worldHexZ % NUM_HEXAGONS_Z;
+
+		if (tileZ > 0.5f * HEXAGON_SIDE_LENGTH) {
+			return new float[] { worldHexX, worldHexZ };
+		} else {
+			Vector2f left = new Vector2f(xOffset + worldHexX * HEXAGON_SQRTHREE_LENGTH, (worldHexZ + 1) * 1.5f * HEXAGON_SIDE_LENGTH);
+			Vector2f right = new Vector2f(left.x + HEXAGON_SQRTHREE_LENGTH, left.y);
+			Vector2f bottom = new Vector2f(left.x + HEXAGON_HALF_SQRTHREE_LENGTH, left.y + 0.5f * HEXAGON_SIDE_LENGTH);
+			float leftSize = Maths.areaOfTriangle(bottom, left, new Vector2f(worldX, worldZ));
+			float rightSize = Maths.areaOfTriangle(bottom, right, new Vector2f(worldX, worldZ));
+			System.out.println(leftSize + " " + rightSize);
+			boolean inFromLeft = leftSize <= HEXAGON_MINIMUM_TRIANGLE_SIZE;
+			boolean inFromRight = rightSize <= HEXAGON_MINIMUM_TRIANGLE_SIZE;
+			if (inFromLeft && inFromRight) {
+				return new float[] { worldHexX, worldHexZ };
+			} else if (inFromLeft) {
+				// is in left hexagon
+				return new float[] { worldHexX - 1 + isOffset, worldHexZ - 1 };
+			} else if (inFromRight) {
+				// is in right hexagon
+				return new float[] { worldHexX + isOffset, worldHexZ - 1 };
+			} else {
+				System.out.println(leftSize + " " + rightSize + " " + HEXAGON_MINIMUM_TRIANGLE_SIZE);
+				System.out.println("im a poop");
+			}
+		}
+		return new float[] { 0 };
+	}
+
+	public static float getHeightOfHexagonMeshTerrain(float worldX, float worldZ, Terrain[][] terrains) {
+		int worldHexZ = (int) Math.floor(worldZ / (HEXAGON_SIDE_LENGTH * 1.5));
+		int isOffset = worldHexZ % 2;
+		float xOffset = HEXAGON_HALF_SQRTHREE_LENGTH * isOffset;
+		int worldHexX = (int) Math.floor((worldX - xOffset) / HEXAGON_SQRTHREE_LENGTH);
+
+		float tileZ = worldZ % (HEXAGON_SIDE_LENGTH * 1.5f);
+		int terrainGridX = (int) Math.floor(worldHexX / NUM_HEXAGONS_X);
+		int terrainGridZ = (int) Math.floor(worldHexZ / NUM_HEXAGONS_Z);
+
+		if (terrainGridX < 0 || terrainGridX > terrains[0].length || terrainGridZ < 0 || terrainGridZ > terrains.length) {
+			System.out.println("out of bounds");
+			return 0;
+		}
+
+		int terrainHexX = worldHexX % NUM_HEXAGONS_X;
+		int terrainHexZ = worldHexZ % NUM_HEXAGONS_Z;
+
+		if (tileZ > 0.5f * HEXAGON_SIDE_LENGTH) {
+			return terrains[terrainGridZ][terrainGridX].heights[terrainHexZ][terrainHexX];
+		} else {
+			Vector2f left = new Vector2f(xOffset + worldHexX * HEXAGON_SQRTHREE_LENGTH, (worldHexZ + 1) * 1.5f * HEXAGON_SIDE_LENGTH);
+			Vector2f right = new Vector2f(left.x + HEXAGON_SQRTHREE_LENGTH, left.y);
+			Vector2f bottom = new Vector2f(left.x + HEXAGON_HALF_SQRTHREE_LENGTH, left.y + 0.5f * HEXAGON_SIDE_LENGTH);
+			float leftSize = Maths.areaOfTriangle(bottom, left, new Vector2f(worldX, worldZ));
+			float rightSize = Maths.areaOfTriangle(bottom, right, new Vector2f(worldX, worldZ));
+			boolean inFromLeft = leftSize <= HEXAGON_MINIMUM_TRIANGLE_SIZE;
+			boolean inFromRight = rightSize <= HEXAGON_MINIMUM_TRIANGLE_SIZE;
+			if (inFromLeft && inFromRight) {
+				return terrains[terrainGridZ][terrainGridX].heights[terrainHexZ][terrainHexX];
+			} else if (inFromLeft) {
+				// is in left hexagon
+				return terrains[terrainGridZ - 1][terrainGridX - 1 + isOffset].heights[terrainHexZ][terrainHexX];
+			} else if (inFromRight) {
+				// is in right hexagon
+				return terrains[terrainGridZ - 1][terrainGridX + isOffset].heights[terrainHexZ][terrainHexX];
+			} else {
+				System.out.println("im a poop");
+			}
+		}
 		return 0;
+	}
+
+	public static boolean pointFromAboveInHexagon(Vector2f point, Vector2f hexagonCenter) {
+		Vector2f leftPoint = new Vector2f(hexagonCenter.x - HEXAGON_HALF_SQRTHREE_LENGTH, hexagonCenter.y - 0.5f * HEXAGON_SIDE_LENGTH);
+		Vector2f rightPoint = new Vector2f(hexagonCenter.x + HEXAGON_HALF_SQRTHREE_LENGTH, leftPoint.y);
+		Vector2f bottomPoint = new Vector2f(hexagonCenter.x, leftPoint.y);
+//		if() {
+//			
+//		}
+		return false;
 	}
 
 	private Vector3f calculateHexagonMeshNormal(Vector3f center, Vector3f vertice) {
@@ -168,11 +277,9 @@ public class Terrain {
 					for (int i = 0; i < 6; i++) {
 						vertices[startingVerticeIndex + 1 + i * 3] = height;
 					}
-					Vector3f center = new Vector3f(referencePointX + HEXAGON_HALF_SQRTHREE_LENGTH, height,
-							referencePointZ + HEXAGON_SIDE_LENGTH);
+					Vector3f center = new Vector3f(referencePointX + HEXAGON_HALF_SQRTHREE_LENGTH, height, referencePointZ + HEXAGON_SIDE_LENGTH);
 					for (int i = 0; i < 6; i++) {
-						Vector3f vertice = new Vector3f(vertices[startingVerticeIndex + i * 3], height,
-								vertices[startingVerticeIndex + i * 3 + 2]);
+						Vector3f vertice = new Vector3f(vertices[startingVerticeIndex + i * 3], height, vertices[startingVerticeIndex + i * 3 + 2]);
 						Vector3f normal = calculateHexagonMeshNormal(center, vertice);
 //						normal = new Vector3f(0, 1, 0);
 						normals[startingVerticeIndex + i * 3] = normal.x;
@@ -181,10 +288,8 @@ public class Terrain {
 					}
 					int startingTextureIndex = 12 * (rowNumber * gridSizeX + columnNumber);
 					for (int i = 0; i < 6; i++) {
-						textureCoords[startingTextureIndex + i * 2] = vertices[startingVerticeIndex + i * 3]
-								/ terrainSizeX;
-						textureCoords[startingTextureIndex + i * 2 + 1] = vertices[startingVerticeIndex + i * 3 + 2]
-								/ terrainSizeY;
+						textureCoords[startingTextureIndex + i * 2] = vertices[startingVerticeIndex + i * 3] / terrainSizeX;
+						textureCoords[startingTextureIndex + i * 2 + 1] = vertices[startingVerticeIndex + i * 3 + 2] / terrainSizeY;
 					}
 				}
 				rowNumber++;
@@ -212,49 +317,5 @@ public class Terrain {
 			}
 		}
 		return loader.loadToVAO(vertices, textureCoords, normals, indices);
-	}
-
-	public float[] pixel_to_pointy_hex(float x, float y) {
-		float q = (float) ((Math.sqrt(3) / 3 * x - 1f / 3 * y) / HEXAGON_SIDE_LENGTH);
-		float r = (2f / 3 * y) / HEXAGON_SIDE_LENGTH;
-		return hexRound(new float[] {q,r});
-	}
-
-	private float[] cubeRound(float x, float y, float z) {
-		float rx = Math.round(x);
-		float ry = Math.round(y);
-		float rz = Math.round(z);
-
-		float x_diff = Math.abs(rx - x);
-		float y_diff = Math.abs(ry - y);
-		float z_diff = Math.abs(rz - z);
-
-		if (x_diff > y_diff && x_diff > z_diff)
-			rx = -ry - rz;
-		else if (y_diff > z_diff)
-			ry = -rx - rz;
-		else
-			rz = -rx - ry;
-
-		return new float[] { rx, ry, rz };
-	}
-
-	private float[] axial_to_cube(float[] hex) {
-		float x = hex[0];
-		float z = hex[1];
-		float y = -x - z;
-		return new float[] { x, y, z };
-	}
-
-	private float[] cube_to_axial(float[] cube) {
-	    float q = cube[0];
-	    float r = cube[2];
-	    return new float[] {q,r};
-	}
-	
-	private float[] hexRound(float[] hex) {
-		float[] inCube = axial_to_cube(hex);
-		float[] roundCube = cubeRound(inCube[0], inCube[1], inCube[2]);
-		return cube_to_axial(roundCube);
 	}
 }

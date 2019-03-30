@@ -25,7 +25,7 @@ public class Player extends Entity {
 		super(model, position, rotX, rotY, rotZ, scale);
 	}
 
-	public void move(Terrain terrain) {
+	public void move(Terrain[][] terrains) {
 		checkInputs();
 		float frameTime = DisplayManager.getFrameTimeSeconds();
 		super.increaseRotation(0, currentTurnSpeed * frameTime, 0);
@@ -34,7 +34,8 @@ public class Player extends Entity {
 		float xDisplacement = (float) (Math.sin(Math.toRadians(getRotY())) * distance);
 		float zDisplacement = (float) (Math.cos(Math.toRadians(getRotY())) * distance);
 		super.increasePosition(xDisplacement, upwardsSpeed * frameTime, zDisplacement);
-		float terrainHeight = terrain.getHeightOfHexagonMeshTerrain(super.getPosition().x, super.getPosition().z);
+//		float terrainHeight = Terrain.getHeightOfHexagonMeshTerrain(super.getPosition().x, super.getPosition().z, terrains);
+		float terrainHeight = 0;
 		if (super.getPosition().y <= terrainHeight) {
 			upwardsSpeed = 0;
 			super.getPosition().y = terrainHeight;
