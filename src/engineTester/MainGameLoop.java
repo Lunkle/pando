@@ -46,9 +46,13 @@ public class MainGameLoop {
 		RawModel rawOakTreeStage1Model = loader.loadToVAO(oakTreeStage1Data);
 		TexturedModel oakTreeStage1Model = new TexturedModel(rawOakTreeStage1Model, new ModelTexture(loader.loadTexture("oakTreeStage1")));
 
+//		ModelData oakTreeStage2Data = OBJFileLoader.loadOBJ("oakTreeStage2");
+//		RawModel rawOakTreeStage2Model = loader.loadToVAO(oakTreeStage2Data);
+//		TexturedModel oakTreeStage2Model = new TexturedModel(rawOakTreeStage2Model, new ModelTexture(loader.loadTexture("oakTreeStage2")));
+
 		List<Entity> ferns = new ArrayList<Entity>();
 		List<Entity> oaks = new ArrayList<Entity>();
-		ArrayList<Terrain> terrains = new ArrayList<Terrain>();
+		Entity centerSprout = new Entity(oakTreeStage1Model, new Vector3f(0, 0, 0), 0, 0, 0, 5);
 
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
 		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("dirt"));
@@ -58,20 +62,27 @@ public class MainGameLoop {
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
-		terrains.add(new Terrain(0, 0, loader, texturePack, blendMap, "map"));
-//		terrains.add(new Terrain(1, 0, loader, texturePack, blendMap, "heightmap"));
+		Terrain[][] terrains = new Terrain[10][10];
+
+		for (int i = 0; i < terrains.length; i++) {
+			for (int j = 0; j < terrains[i].length; j++) {
+				terrains[j][i] = (new Terrain(j, i, loader, texturePack, blendMap, "map"));
+			}
+		}
 
 		Random random = new Random();
 		for (int i = 0; i < 50; i++) {
 			float entityX = random.nextFloat() * 800;
 			float entityZ = random.nextFloat() * 800;
-			float entityY = findCurrentTerrain(entityX, entityZ, terrains).getHeightOfTriangleMeshTerrain(entityX, entityZ);
+//			float entityY = Terrain.getHeightOfHexagonMeshTerrain(entityX, entityZ, terrains);
+			float entityY = 0;
 			ferns.add(new Entity(fernModel, random.nextInt(4), new Vector3f(entityX, entityY, entityZ), 0, 0, 0, 3));
 		}
 		for (int i = 0; i < 5000; i++) {
 			float entityX = random.nextFloat() * 800;
 			float entityZ = random.nextFloat() * 800;
-			float entityY = findCurrentTerrain(entityX, entityZ, terrains).getHeightOfTriangleMeshTerrain(entityX, entityZ);
+//			float entityY = Terrain.getHeightOfHexagonMeshTerrain(entityX, entityZ, terrains);
+			float entityY = 0;
 			oaks.add(new Entity(oakTreeStage1Model, new Vector3f(entityX, entityY, entityZ), 0, random.nextFloat() * 360, 0, 3));
 		}
 
@@ -84,9 +95,12 @@ public class MainGameLoop {
 
 		List<GUITexture> guis = new ArrayList<GUITexture>();
 		GUITexture gui = new GUITexture(loader.loadTexture("dukemascot"), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
-		guis.add(gui);
+//		guis.add(gui);
+		
+		Player player = new Player(oakTreeStage1Model, new Vector3f(10, 0, 15), 0.0f, 0.0f, 0.0f, 0.5f);
+//		ThirdPersonCamera camera = new ThirdPersonCamera(player);
 
-		Player player = new Player(stanfordBunnyModel, new Vector3f(100, 0, 150), 0.0f, 0.0f, 0.0f, 1.0f);
+//		Player player = new Player(stanfordBunnyModel, new Vector3f(100, 0, 150), 0.0f, 0.0f, 0.0f, 1.0f);
 //		ThirdPersonCamera camera = new ThirdPersonCamera(player);
 		FloatingCamera camera = new FloatingCamera(10, 10);
 
@@ -94,19 +108,24 @@ public class MainGameLoop {
 		GUIRenderer guiRenderer = new GUIRenderer(loader);
 
 		while (!Display.isCloseRequested()) {
-			Terrain playerTerrain = findCurrentTerrain(player.getPosition().x, player.getPosition().z, terrains);
-			player.move(playerTerrain);
+			player.move(terrains);
 			camera.move();
 			masterRenderer.processEntity(player);
-			for (Terrain terrain : terrains) {
-				masterRenderer.processTerrain(terrain);
+			for (Terrain[] terrainArray : terrains) {
+				for (Terrain terrain : terrainArray) {
+					masterRenderer.processTerrain(terrain);
+				}
 			}
-			for (Entity entity : ferns) {
-				masterRenderer.processEntity(entity);
-			}
-			for (Entity entity : oaks) {
-				masterRenderer.processEntity(entity);
-			}
+
+			Vector3f pPos = player.getPosition();
+//			float[] coords = Terrain.findHexCoords(pPos.x, pPos.z);
+			float[] coords = Terrain.getHexagon(pPos.x, pPos.z, terrains);
+			centerSprout.setPosition(new Vector3f((coords[1] % 2) * Terrain.HEXAGON_HALF_SQRTHREE_LENGTH + coords[0] * Terrain.HEXAGON_SQRTHREE_LENGTH + Terrain.HEXAGON_HALF_SQRTHREE_LENGTH, 0, coords[1] * 1.5f * Terrain.HEXAGON_SIDE_LENGTH + Terrain.HEXAGON_SIDE_LENGTH));
+
+			System.out.println("Position: " + pPos.x + " " + pPos.z);
+
+			masterRenderer.processEntity(centerSprout);
+
 			masterRenderer.render(light, camera);
 			guiRenderer.render(guis);
 			DisplayManager.updateDisplay();
@@ -117,15 +136,6 @@ public class MainGameLoop {
 		loader.cleanUp();
 		DisplayManager.closeDisplay();
 
-	}
-
-	private static Terrain findCurrentTerrain(float playerX, float playerZ, ArrayList<Terrain> terrains) {
-		for (Terrain terrain : terrains) {
-			if (playerX > terrain.getX() && playerX < terrain.getX() + Terrain.SIZE && playerZ > terrain.getZ() && playerZ < terrain.getZ() + Terrain.SIZE) {
-				return terrain;
-			}
-		}
-		return terrains.get(0);
 	}
 
 }
