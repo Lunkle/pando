@@ -12,6 +12,7 @@ import entities.Entity;
 import entities.Light;
 import entities.Player;
 import entities.ThirdPersonCamera;
+import entities.FloatingCamera;
 import guis.GUIRenderer;
 import guis.GUITexture;
 import models.RawModel;
@@ -86,7 +87,8 @@ public class MainGameLoop {
 		guis.add(gui);
 
 		Player player = new Player(stanfordBunnyModel, new Vector3f(100, 0, 150), 0.0f, 0.0f, 0.0f, 1.0f);
-		ThirdPersonCamera camera = new ThirdPersonCamera(player);
+//		ThirdPersonCamera camera = new ThirdPersonCamera(player);
+		FloatingCamera camera = new FloatingCamera(10, 10);
 
 		MasterRenderer masterRenderer = new MasterRenderer();
 		GUIRenderer guiRenderer = new GUIRenderer(loader);
