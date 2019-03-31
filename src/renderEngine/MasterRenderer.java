@@ -28,7 +28,6 @@ public class MasterRenderer {
 	private static final float BLUE = 0.98f;
 
 	private Matrix4f projectionMatrix;
-
 	private StaticShader shader = new StaticShader();
 	private EntityRenderer renderer;
 
@@ -52,6 +51,10 @@ public class MasterRenderer {
 
 	public static void disableCulling() {
 		GL11.glDisable(GL11.GL_CULL_FACE);
+	}
+
+	public Matrix4f getProjectionMatrix() {
+		return projectionMatrix;
 	}
 
 	public void render(Light sun, Camera camera) {

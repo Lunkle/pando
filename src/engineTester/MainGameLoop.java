@@ -12,7 +12,6 @@ import entities.Entity;
 import entities.Light;
 import entities.Player;
 import entities.ThirdPersonCamera;
-import entities.FloatingCamera;
 import guis.GUIRenderer;
 import guis.GUITexture;
 import models.RawModel;
@@ -26,6 +25,7 @@ import terrains.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
+import toolbox.MousePicker;
 
 public class MainGameLoop {
 
@@ -71,58 +71,57 @@ public class MainGameLoop {
 		}
 
 		Random random = new Random();
-		for (int i = 0; i < 50; i++) {
-			float entityX = random.nextFloat() * 800;
-			float entityZ = random.nextFloat() * 800;
-//			float entityY = Terrain.getHeightOfHexagonMeshTerrain(entityX, entityZ, terrains);
-			float entityY = 0;
-			ferns.add(new Entity(fernModel, random.nextInt(4), new Vector3f(entityX, entityY, entityZ), 0, 0, 0, 3));
+		for (int i = 0; i < 10; i++) {
+			float entityX = 20 + random.nextFloat() * 100;
+			float entityZ = 20 + random.nextFloat() * 100;
+			float entityY = Terrain.getHeightOfHexagonMeshTerrain(Terrain.getHexagon(entityX, entityZ, terrains), terrains);
+//			float entityY = 0;
+			ferns.add(new Entity(fernModel, random.nextInt(4), new Vector3f(entityX, entityY, entityZ), 0, 0, 0, 1));
 		}
-		for (int i = 0; i < 5000; i++) {
-			float entityX = random.nextFloat() * 800;
-			float entityZ = random.nextFloat() * 800;
-//			float entityY = Terrain.getHeightOfHexagonMeshTerrain(entityX, entityZ, terrains);
-			float entityY = 0;
+		for (int i = 0; i < 10; i++) {
+			float entityX = 20 + random.nextFloat() * 50;
+			float entityZ = 20 + random.nextFloat() * 50;
+			float entityY = Terrain.getHeightOfHexagonMeshTerrain(Terrain.getHexagon(entityX, entityZ, terrains), terrains);
+//			float entityY = 0;
 			oaks.add(new Entity(oakTreeStage1Model, new Vector3f(entityX, entityY, entityZ), 0, random.nextFloat() * 360, 0, 3));
 		}
 
 		Light light = new Light(new Vector3f(20000, 20000, 2000), new Vector3f(1, 1, 1));
 
-		ModelTexture whiteTexture = new ModelTexture(loader.loadTexture("white"));
-		ModelData stanfordBunnyData = OBJFileLoader.loadOBJ("bunny");
-		RawModel rawStanfordBunnyModel = loader.loadToVAO(stanfordBunnyData);
-		TexturedModel stanfordBunnyModel = new TexturedModel(rawStanfordBunnyModel, whiteTexture);
-
 		List<GUITexture> guis = new ArrayList<GUITexture>();
 		GUITexture gui = new GUITexture(loader.loadTexture("dukemascot"), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
-//		guis.add(gui);
-		
-		Player player = new Player(oakTreeStage1Model, new Vector3f(10, 0, 15), 0.0f, 0.0f, 0.0f, 0.5f);
-//		ThirdPersonCamera camera = new ThirdPersonCamera(player);
+		guis.add(gui);
 
-//		Player player = new Player(stanfordBunnyModel, new Vector3f(100, 0, 150), 0.0f, 0.0f, 0.0f, 1.0f);
-//		ThirdPersonCamera camera = new ThirdPersonCamera(player);
-		FloatingCamera camera = new FloatingCamera(10, 10);
+		Player player = new Player(oakTreeStage1Model, new Vector3f(10, 0, 15), 0.0f, 0.0f, 0.0f, 0.5f);
+		ThirdPersonCamera camera = new ThirdPersonCamera(player);
 
 		MasterRenderer masterRenderer = new MasterRenderer();
 		GUIRenderer guiRenderer = new GUIRenderer(loader);
 
+//		TerrainGen gen = new TerrainGen(10, 10, "map", "res");
+//		gen.makeDefaultFile();
+
+		MousePicker picker = new MousePicker(camera, masterRenderer.getProjectionMatrix());
+
 		while (!Display.isCloseRequested()) {
 			player.move(terrains);
 			camera.move();
+
+			picker.update();
+			System.out.println(picker.getCurrentRay());
+
 			masterRenderer.processEntity(player);
 			for (Terrain[] terrainArray : terrains) {
 				for (Terrain terrain : terrainArray) {
 					masterRenderer.processTerrain(terrain);
 				}
 			}
-
+			for (Entity fern : ferns) {
+				masterRenderer.processEntity(fern);
+			}
 			Vector3f pPos = player.getPosition();
-//			float[] coords = Terrain.findHexCoords(pPos.x, pPos.z);
-			float[] coords = Terrain.getHexagon(pPos.x, pPos.z, terrains);
-			centerSprout.setPosition(new Vector3f((coords[1] % 2) * Terrain.HEXAGON_HALF_SQRTHREE_LENGTH + coords[0] * Terrain.HEXAGON_SQRTHREE_LENGTH + Terrain.HEXAGON_HALF_SQRTHREE_LENGTH, 0, coords[1] * 1.5f * Terrain.HEXAGON_SIDE_LENGTH + Terrain.HEXAGON_SIDE_LENGTH));
-
-			System.out.println("Position: " + pPos.x + " " + pPos.z);
+			Vector2f coords = Terrain.getHexagon(pPos.x, pPos.z, terrains);
+			centerSprout.setPosition(new Vector3f((coords.y % 2) * Terrain.HEXAGON_HALF_SQRTHREE_LENGTH + coords.x * Terrain.HEXAGON_SQRTHREE_LENGTH + Terrain.HEXAGON_HALF_SQRTHREE_LENGTH, 0, coords.y * 1.5f * Terrain.HEXAGON_SIDE_LENGTH + Terrain.HEXAGON_SIDE_LENGTH));
 
 			masterRenderer.processEntity(centerSprout);
 
