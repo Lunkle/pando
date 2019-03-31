@@ -52,18 +52,18 @@ public class Player extends Entity {
 
 	private void checkInputs() {
 		currentSpeed = 0;
-		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
 			this.currentSpeed += RUN_SPEED;
 		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
 			this.currentSpeed -= RUN_SPEED;
 		}
 
 		currentTurnSpeed = 0;
-		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
 			currentTurnSpeed += TURN_SPEED;
 		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+		if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
 			currentTurnSpeed -= TURN_SPEED;
 		}
 
