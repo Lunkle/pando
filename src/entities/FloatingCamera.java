@@ -4,6 +4,8 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 
+import renderEngine.DisplayManager;
+
 public class FloatingCamera extends Camera {
 	private Vector3f vel = new Vector3f(0, 0, 0);
 	private boolean wasPressed = false;
@@ -99,17 +101,7 @@ public class FloatingCamera extends Camera {
 				vel.x = 0;
 			}
 		}
-//		currentTurnSpeed = 0;
-//		if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-//			currentTurnSpeed += TURN_SPEED;
-//		}
-//		if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-//			currentTurnSpeed -= TURN_SPEED;
-//		}
-//
-//		if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
-//			jump();
-//		}
+
 		newPos();
 	}
 	
@@ -133,20 +125,18 @@ public class FloatingCamera extends Camera {
 		}
 	}
 	
-	private void newPos() {
+	private void newPos() {		
 		double moveMag = Math.sqrt(Math.pow(vel.x, 2) + Math.pow(vel.z, 2));
-		double moveAng = Math.toDegrees(Math.atan(vel.x/vel.z));
 		
-		double newAng = moveAng + yaw;
-				
-		double zMod = Math.cos(Math.toRadians(newAng))*moveMag*vel.z/Math.abs(vel.z);
-		double xMod = Math.sin(Math.toRadians(newAng))*moveMag;
-				
-//		float xMod = vel.x;
-//		float zMod = vel.z;
-//		System.out.print(yaw);
+		//Limits speed
+		if (moveMag > 1) {
+			moveMag = 1;
+		}
 		
-		System.out.print("\n\n" + vel.x + ' ' + vel.z + "\n\n");
+		float xMod = (float) (Math.sin(Math.toRadians(getMoveAngle()))*moveMag);		
+		float zMod = (float) (Math.cos(Math.toRadians(getMoveAngle()))*moveMag);
+
+		System.out.print("\n\n" + getMoveAngle() + ' ' + xMod + ' ' + zMod + "\n\n");
 		
 		if (! Double.isNaN(xMod)) {
 			position.x += xMod * position.y/HEIGHT_SPEED_MOD;
@@ -155,5 +145,36 @@ public class FloatingCamera extends Camera {
 			position.z += zMod * position.y/HEIGHT_SPEED_MOD;
 		}
 	}
-//	private int 
+	
+	private float getMoveAngle() {		
+		float angle = (float) (Math.toDegrees(Math.atan(vel.x/vel.z))%360);
+		
+		if (Double.isNaN(angle)) {
+			if (vel.x > 0) {
+				return 90f;
+			} else if (vel.x < 0) {
+				return -90f;
+			}
+		}
+		
+		if (vel.x > 0 && vel.z > 0) {
+			return angle - yaw;
+		} else if (vel.x < 0 && vel.z > 0) {
+			return angle - yaw;
+		} else if (vel.x > 0 && vel.z < 0) {
+			return angle - yaw + 180;
+		} else if (vel.x < 0 && vel.z < 0) {
+			return angle - yaw + 180;
+		} else if (vel.x > 0 && vel.z == 0) {
+			return -yaw + 90;
+		} else if (vel.x < 0 && vel.z == 0) {
+			return -yaw - 90;
+		} else if (vel.z > 0 && vel.x == 0) {
+			return angle - yaw;
+		} else if (vel.z < 0 && vel.x == 0) {
+			return -angle - yaw + 180;
+		}
+		
+		return (float) angle + yaw;
+	}
 }
