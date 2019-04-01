@@ -34,8 +34,8 @@ public class Player extends Entity {
 		float xDisplacement = (float) (Math.sin(Math.toRadians(getRotY())) * distance);
 		float zDisplacement = (float) (Math.cos(Math.toRadians(getRotY())) * distance);
 		super.increasePosition(xDisplacement, upwardsSpeed * frameTime, zDisplacement);
-//		float terrainHeight = Terrain.getHeightOfHexagonMeshTerrain(super.getPosition().x, super.getPosition().z, terrains);
-		float terrainHeight = 0;
+		float terrainHeight = Terrain.getHeightOfHexagonMeshTerrain(Terrain.getHexagon(super.getPosition().x, super.getPosition().z, terrains), terrains);
+//		float terrainHeight = 0;
 		if (super.getPosition().y <= terrainHeight) {
 			upwardsSpeed = 0;
 			super.getPosition().y = terrainHeight;

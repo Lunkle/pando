@@ -4,69 +4,67 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 
-import renderEngine.DisplayManager;
-
 public class FloatingCamera extends Camera {
 	private Vector3f vel = new Vector3f(0, 0, 0);
 	private boolean wasPressed = false;
 	private int startX = 0;
 	private long mousePress = 0l;
 	private float turnVel = 0f;
-	private int START_HEIGHT = 50;
-	private float TURN_SPEED = 2.5f;
-	private boolean TURN_ON_DA = false;
-	private float MOVE_SPEED = 0.05f;
-	private float MAX_SPEED = 1;
-	private float HEIGHT_SPEED_MOD = 50f;
-	private float MAX_ZOOM_SPEED = 3f;
-	private int MIN_HEIGHT = 5;
-	private int MAX_HEIGHT = 100;
-	
+	private final int START_HEIGHT = 50;
+	private final float TURN_SPEED = 2.5f;
+	private final boolean TURN_ON_DA = false;
+	private final float MOVE_SPEED = 0.05f;
+	private final float MAX_SPEED = 1;
+	private final float HEIGHT_SPEED_MOD = 50f;
+	private final float MAX_ZOOM_SPEED = 3f;
+	private final int MIN_HEIGHT = 5;
+	private final int MAX_HEIGHT = 100;
+
 	public FloatingCamera(int startX, int startZ) {
 		position.x = startX;
 		position.z = startZ;
 		position.y = START_HEIGHT;
-		
+
 		pitch = 30;
 		roll = 0;
 		yaw = 0;
 	}
-	
+
 	public void move() {
 		calculateLoc();
 	}
-	
-	private void calculateLoc() {		
+
+	private void calculateLoc() {
 		if (Math.abs(vel.y) < MAX_ZOOM_SPEED)
-			vel.y -= Mouse.getDWheel()*0.01f;
-		
+			vel.y -= Mouse.getDWheel() * 0.01f;
+
 		if (Mouse.getDWheel() == 0 && Math.abs(vel.y) > 0.1) {
-			vel.y -= 0.1*vel.y/Math.abs(vel.y);
+			vel.y -= 0.1 * vel.y / Math.abs(vel.y);
 		} else if (Mouse.getDWheel() == 0 && Math.abs(vel.y) > 0) {
 			vel.y = 0;
 		}
-		
+
 		if (position.y + vel.y > MIN_HEIGHT && position.y + vel.y < MAX_HEIGHT) {
 			position.y += vel.y;
 		} else if (position.y < MIN_HEIGHT) {
 			position.y = MIN_HEIGHT;
 		}
-		
+
 		if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
 			if (vel.z <= MAX_SPEED) {
 				vel.z += MOVE_SPEED;
 			}
-		} else if(vel.z > MOVE_SPEED){
+		} else if (vel.z > MOVE_SPEED) {
 			vel.z -= MOVE_SPEED;
-		} else if(vel.z > 0) {
+		} else if (vel.z > 0) {
 			vel.z = 0;
 		}
-		
+
 		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
 			if (vel.z >= -MAX_SPEED) {
 				vel.z -= MOVE_SPEED;
 			}
-		} else if(vel.z < -MOVE_SPEED) {
+		} else if (vel.z < -MOVE_SPEED) {
 			vel.z += MOVE_SPEED;
 		} else if (vel.z < 0) {
 			vel.z = 0;
@@ -85,17 +83,17 @@ public class FloatingCamera extends Camera {
 				if (vel.x <= MAX_SPEED) {
 					vel.x += MOVE_SPEED;
 				}
-			} else if(vel.x > MOVE_SPEED){
+			} else if (vel.x > MOVE_SPEED) {
 				vel.x -= MOVE_SPEED;
-			} else if(vel.x > 0) {
+			} else if (vel.x > 0) {
 				vel.x = 0;
 			}
-			
+
 			if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
 				if (vel.x >= -MAX_SPEED) {
 					vel.x -= MOVE_SPEED;
 				}
-			} else if(vel.x < -MOVE_SPEED) {
+			} else if (vel.x < -MOVE_SPEED) {
 				vel.x += MOVE_SPEED;
 			} else if (vel.x < 0) {
 				vel.x = 0;
@@ -104,16 +102,14 @@ public class FloatingCamera extends Camera {
 
 		newPos();
 	}
-	
+
 	private void calculateMouseTurn() {
 		if (Mouse.isButtonDown(0)) {
 			if (wasPressed) {
 				if (System.nanoTime() > mousePress + 250000000l) {
 					float rawMouseDX = Mouse.getDX();
 					float yawChange = rawMouseDX * 0.1f;
-					yaw -= yawChange;
-					
-					yaw = yaw % 360;
+					yaw = (yaw - yawChange) % 360;
 				}
 			} else {
 				wasPressed = true;
@@ -124,31 +120,31 @@ public class FloatingCamera extends Camera {
 			mousePress = 0;
 		}
 	}
-	
-	private void newPos() {		
+
+	private void newPos() {
 		double moveMag = Math.sqrt(Math.pow(vel.x, 2) + Math.pow(vel.z, 2));
-		
-		//Limits speed
+
+		// Limits speed
 		if (moveMag > 1) {
 			moveMag = 1;
 		}
-		
-		float xMod = (float) (Math.sin(Math.toRadians(getMoveAngle()))*moveMag);		
-		float zMod = (float) (Math.cos(Math.toRadians(getMoveAngle()))*moveMag);
+
+		float xMod = (float) (Math.sin(Math.toRadians(getMoveAngle())) * moveMag);
+		float zMod = (float) (Math.cos(Math.toRadians(getMoveAngle())) * moveMag);
 
 		System.out.print("\n\n" + getMoveAngle() + ' ' + xMod + ' ' + zMod + "\n\n");
-		
-		if (! Double.isNaN(xMod)) {
-			position.x += xMod * position.y/HEIGHT_SPEED_MOD;
+
+		if (!Double.isNaN(xMod)) {
+			position.x += xMod * position.y / HEIGHT_SPEED_MOD;
 		}
-		if (! Double.isNaN(zMod)) {
-			position.z += zMod * position.y/HEIGHT_SPEED_MOD;
+		if (!Double.isNaN(zMod)) {
+			position.z += zMod * position.y / HEIGHT_SPEED_MOD;
 		}
 	}
-	
-	private float getMoveAngle() {		
-		float angle = (float) (Math.toDegrees(Math.atan(vel.x/vel.z))%360);
-		
+
+	private float getMoveAngle() {
+		float angle = (float) (Math.toDegrees(Math.atan(vel.x / vel.z)) % 360);
+
 		if (Double.isNaN(angle)) {
 			if (vel.x > 0) {
 				return 90f;
@@ -156,7 +152,7 @@ public class FloatingCamera extends Camera {
 				return -90f;
 			}
 		}
-		
+
 		if (vel.x > 0 && vel.z > 0) {
 			return angle - yaw;
 		} else if (vel.x < 0 && vel.z > 0) {
@@ -174,7 +170,7 @@ public class FloatingCamera extends Camera {
 		} else if (vel.z < 0 && vel.x == 0) {
 			return -angle - yaw + 180;
 		}
-		
+
 		return (float) angle + yaw;
 	}
 }

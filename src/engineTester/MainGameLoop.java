@@ -9,7 +9,6 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import entities.Entity;
-import entities.FloatingCamera;
 import entities.Light;
 import entities.Player;
 import entities.ThirdPersonCamera;
@@ -55,7 +54,7 @@ public class MainGameLoop {
 		List<Entity> oaks = new ArrayList<Entity>();
 		Entity centerSprout = new Entity(oakTreeStage1Model, new Vector3f(0, 0, 0), 0, 0, 0, 5);
 
-		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
+		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("green"));
 		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("dirt"));
 		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("pinkFlowers"));
 		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path"));
@@ -73,15 +72,15 @@ public class MainGameLoop {
 
 		Random random = new Random();
 		for (int i = 0; i < 10; i++) {
-			float entityX = 20 + random.nextFloat() * 100;
-			float entityZ = 20 + random.nextFloat() * 100;
+			float entityX = 10 + random.nextFloat() * 50;
+			float entityZ = 10 + random.nextFloat() * 50;
 			float entityY = Terrain.getHeightOfHexagonMeshTerrain(Terrain.getHexagon(entityX, entityZ, terrains), terrains);
 //			float entityY = 0;
 			ferns.add(new Entity(fernModel, random.nextInt(4), new Vector3f(entityX, entityY, entityZ), 0, 0, 0, 1));
 		}
 		for (int i = 0; i < 10; i++) {
-			float entityX = 20 + random.nextFloat() * 50;
-			float entityZ = 20 + random.nextFloat() * 50;
+			float entityX = 10 + random.nextFloat() * 50;
+			float entityZ = 10 + random.nextFloat() * 50;
 			float entityY = Terrain.getHeightOfHexagonMeshTerrain(Terrain.getHexagon(entityX, entityZ, terrains), terrains);
 //			float entityY = 0;
 			oaks.add(new Entity(oakTreeStage1Model, new Vector3f(entityX, entityY, entityZ), 0, random.nextFloat() * 360, 0, 3));
@@ -94,9 +93,10 @@ public class MainGameLoop {
 		guis.add(gui);
 
 		Player player = new Player(oakTreeStage1Model, new Vector3f(10, 0, 15), 0.0f, 0.0f, 0.0f, 0.5f);
-		FloatingCamera camera = new FloatingCamera(0, 0);
+//		FloatingCamera camera = new FloatingCamera(0, 0);
+		ThirdPersonCamera camera = new ThirdPersonCamera(player);
 
-		MasterRenderer masterRenderer = new MasterRenderer();
+		MasterRenderer masterRenderer = new MasterRenderer(loader);
 		GUIRenderer guiRenderer = new GUIRenderer(loader);
 
 //		TerrainGen gen = new TerrainGen(10, 10, "map", "res");

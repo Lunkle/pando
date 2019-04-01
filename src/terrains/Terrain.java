@@ -16,9 +16,9 @@ import toolbox.Maths;
 
 public class Terrain {
 
-	public static final int NUM_HEXAGONS_X = 4;
-	public static final int NUM_HEXAGONS_Z = 4;
-	public static final float HEXAGON_SIDE_LENGTH = 5;
+	public static final int NUM_HEXAGONS_X = 10;
+	public static final int NUM_HEXAGONS_Z = 10;
+	public static final float HEXAGON_SIDE_LENGTH = 2;
 	public static final float HEXAGON_SQRTHREE_LENGTH = HEXAGON_SIDE_LENGTH * (float) Math.sqrt(3);
 	public static final float HEXAGON_HALF_SQRTHREE_LENGTH = HEXAGON_SQRTHREE_LENGTH / 2;
 	public static final float HEXAGON_MINIMUM_TRIANGLE_SIZE = HEXAGON_SIDE_LENGTH * HEXAGON_HALF_SQRTHREE_LENGTH;
@@ -123,7 +123,7 @@ public class Terrain {
 		centerToPoint = Vector3f.sub(vertice, center, null);
 		centerToPoint.normalise();
 		Vector3f normalVector = null;
-		normalVector = Vector3f.add(centerToPoint, new Vector3f(0, 5, 0), null);
+		normalVector = Vector3f.add(centerToPoint, new Vector3f(0, 6, 0), null);
 		normalVector.normalise();
 		return normalVector;
 	}
@@ -207,14 +207,19 @@ public class Terrain {
 			}
 		}
 		startingVerticeIndex = 0;
-		int[] hexSideIndiceArray = new int[] { 4, DIFF_NEXT_ROW, DIFF_NEXT_ROW + 1, 4, 3, DIFF_NEXT_ROW + 1, 8, 4, 5, 8, 7, 5, DIFF_NEXT_ROW, 8, 9, DIFF_NEXT_ROW, DIFF_NEXT_ROW + 5, 9 };
+		int[] hexSideIndiceArrayNonOffset = new int[] { 4, DIFF_NEXT_ROW, DIFF_NEXT_ROW + 1, 4, 3, DIFF_NEXT_ROW + 1, 8, 4, 5, 8, 7, 5, DIFF_NEXT_ROW, 8, 9, DIFF_NEXT_ROW, DIFF_NEXT_ROW + 5, 9 };
+		int[] hexSideIndiceArrayOffset = new int[] { 4, DIFF_NEXT_ROW + 6, DIFF_NEXT_ROW + 7, 4, 3, DIFF_NEXT_ROW + 7, 8, 4, 5, 8, 7, 5, DIFF_NEXT_ROW + 6, 8, 9, DIFF_NEXT_ROW + 6, DIFF_NEXT_ROW + 11, 9 };
+		boolean offset = false;
 		for (int y = 0; y < NUM_HEXAGONS_Z - 1; y++) {
+//		for (int y = 0; y < 1; y++) {
 			for (int x = 0; x < NUM_HEXAGONS_X - 1; x++) {
-				for (int index : hexSideIndiceArray) {
-					indices[startingIndiceIndex++] = startingVerticeIndex + index;
+				for (int i = 0; i < 18; i++) {
+					indices[startingIndiceIndex++] = startingVerticeIndex + (offset ? hexSideIndiceArrayOffset : hexSideIndiceArrayNonOffset)[i];
 				}
 				startingVerticeIndex += 6;
 			}
+			offset = !offset;
+			startingVerticeIndex += 6;
 		}
 		return loader.loadToVAO(vertices, textureCoords, normals, indices);
 	}

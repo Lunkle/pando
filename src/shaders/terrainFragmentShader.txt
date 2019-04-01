@@ -20,7 +20,7 @@ uniform float reflectivity;
 uniform vec3 skyColour;
 
 void main(void){
-
+    
 	vec4 blendMapColour = texture(blendMap, pass_textureCoordinates);
 	
 	float backgroundTextureAmount = 1 - blendMapColour.r - blendMapColour.g - blendMapColour.b;
