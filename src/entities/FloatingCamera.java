@@ -12,15 +12,15 @@ public class FloatingCamera extends Camera {
 	private int startX = 0;
 	private long mousePress = 0l;
 	private float turnVel = 0f;
-	private int START_HEIGHT = 50;
-	private float TURN_SPEED = 2.5f;
-	private boolean TURN_ON_DA = false;
-	private float MOVE_SPEED = 0.05f;
-	private float MAX_SPEED = 1;
-	private float HEIGHT_SPEED_MOD = 50f;
-	private float MAX_ZOOM_SPEED = 3f;
-	private int MIN_HEIGHT = 5;
-	private int MAX_HEIGHT = 100;
+	private final int START_HEIGHT = 50;
+	private final float TURN_SPEED = 2.5f;
+	private final boolean TURN_ON_DA = false;
+	private final float MOVE_SPEED = 0.05f;
+	private final float MAX_SPEED = 1;
+	private final float HEIGHT_SPEED_MOD = 50f;
+	private final float MAX_ZOOM_SPEED = 3f;
+	private final int MIN_HEIGHT = 5;
+	private final int MAX_HEIGHT = 100;
 	
 	public FloatingCamera(int startX, int startZ) {
 		position.x = startX;
@@ -108,7 +108,7 @@ public class FloatingCamera extends Camera {
 	private void calculateMouseTurn() {
 		if (Mouse.isButtonDown(0)) {
 			if (wasPressed) {
-				if (System.nanoTime() > mousePress + 250000000l) {
+				if (System.currentTimeMillis() > mousePress + 250l) {
 					float rawMouseDX = Mouse.getDX();
 					float yawChange = rawMouseDX * 0.1f;
 					yaw -= yawChange;
@@ -117,7 +117,7 @@ public class FloatingCamera extends Camera {
 				}
 			} else {
 				wasPressed = true;
-				mousePress = System.nanoTime();
+				mousePress = System.currentTimeMillis();
 			}
 		} else if (wasPressed) {
 			wasPressed = false;
