@@ -9,6 +9,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import entities.Entity;
+import entities.FloatingCamera;
 import entities.Light;
 import entities.Player;
 import entities.ThirdPersonCamera;
@@ -93,7 +94,7 @@ public class MainGameLoop {
 		guis.add(gui);
 
 		Player player = new Player(oakTreeStage1Model, new Vector3f(10, 0, 15), 0.0f, 0.0f, 0.0f, 0.5f);
-		ThirdPersonCamera camera = new ThirdPersonCamera(player);
+		FloatingCamera camera = new FloatingCamera(0, 0);
 
 		MasterRenderer masterRenderer = new MasterRenderer();
 		GUIRenderer guiRenderer = new GUIRenderer(loader);
