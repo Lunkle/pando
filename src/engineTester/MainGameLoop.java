@@ -12,6 +12,7 @@ import entities.Entity;
 import entities.Light;
 import entities.Player;
 import entities.ThirdPersonCamera;
+import entities.FloatingCamera;
 import guis.GUIRenderer;
 import guis.GUITexture;
 import models.RawModel;
@@ -93,8 +94,8 @@ public class MainGameLoop {
 		guis.add(gui);
 
 		Player player = new Player(oakTreeStage1Model, new Vector3f(10, 0, 15), 0.0f, 0.0f, 0.0f, 0.5f);
-//		FloatingCamera camera = new FloatingCamera(0, 0);
-		ThirdPersonCamera camera = new ThirdPersonCamera(player);
+		FloatingCamera camera = new FloatingCamera(10, 10);
+//		ThirdPersonCamera camera = new ThirdPersonCamera(player);
 
 		MasterRenderer masterRenderer = new MasterRenderer(loader);
 		GUIRenderer guiRenderer = new GUIRenderer(loader);
@@ -106,7 +107,7 @@ public class MainGameLoop {
 
 		while (!Display.isCloseRequested()) {
 			player.move(terrains);
-			camera.move();
+			camera.move(terrains);
 
 			picker.update();
 			System.out.println(picker.getCurrentRay());

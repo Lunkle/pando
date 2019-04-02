@@ -1,7 +1,9 @@
 package entities;
 
+import terrains.Terrain;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 public class FloatingCamera extends Camera {
@@ -30,77 +32,94 @@ public class FloatingCamera extends Camera {
 		yaw = 0;
 	}
 
-	public void move() {
-		calculateLoc();
+	public void move(Terrain[][] terrains) {
+		calculateLoc(terrains);
 	}
 
-	private void calculateLoc() {
-		if (Math.abs(vel.y) < MAX_ZOOM_SPEED)
-			vel.y -= Mouse.getDWheel() * 0.01f;
+	private void calculateLoc(Terrain[][] terrains) {
+		System.out.print(Terrain.getHexagon(position.x, position.z, terrains));
+		
+		try {
+			int minHeight = (int) (MIN_HEIGHT + Terrain.getHeightOfHexagonMeshTerrain(Terrain.getHexagon(position.x, position.z, terrains), terrains));
+			
+			if (Math.abs(vel.y) < MAX_ZOOM_SPEED)
+				vel.y -= Mouse.getDWheel() * 0.01f;
 
-		if (Mouse.getDWheel() == 0 && Math.abs(vel.y) > 0.1) {
-			vel.y -= 0.1 * vel.y / Math.abs(vel.y);
-		} else if (Mouse.getDWheel() == 0 && Math.abs(vel.y) > 0) {
-			vel.y = 0;
-		}
-
-		if (position.y + vel.y > MIN_HEIGHT && position.y + vel.y < MAX_HEIGHT) {
-			position.y += vel.y;
-		} else if (position.y < MIN_HEIGHT) {
-			position.y = MIN_HEIGHT;
-		}
-
-		if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-			if (vel.z <= MAX_SPEED) {
-				vel.z += MOVE_SPEED;
+			if (Mouse.getDWheel() == 0 && Math.abs(vel.y) > 0.1) {
+				vel.y -= 0.1 * vel.y / Math.abs(vel.y);
+			} else if (Mouse.getDWheel() == 0 && Math.abs(vel.y) > 0) {
+				vel.y = 0;
 			}
-		} else if (vel.z > MOVE_SPEED) {
-			vel.z -= MOVE_SPEED;
-		} else if (vel.z > 0) {
-			vel.z = 0;
-		}
 
-		if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-			if (vel.z >= -MAX_SPEED) {
+			if (position.y + vel.y > minHeight && position.y + vel.y < MAX_HEIGHT) {
+				position.y += vel.y;
+			} else if (position.y < minHeight) {
+				position.y = minHeight;
+			}
+
+			if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+				if (vel.z <= MAX_SPEED) {
+					vel.z += MOVE_SPEED;
+				}
+			} else if (vel.z > MOVE_SPEED) {
 				vel.z -= MOVE_SPEED;
+			} else if (vel.z > 0) {
+				vel.z = 0;
 			}
-		} else if (vel.z < -MOVE_SPEED) {
-			vel.z += MOVE_SPEED;
-		} else if (vel.z < 0) {
-			vel.z = 0;
-		}
 
-		if (TURN_ON_DA) {
-			if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-				yaw -= TURN_SPEED;
-			}
-			if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-				yaw += TURN_SPEED;
-			}
-		} else {
-			calculateMouseTurn();
-			if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-				if (vel.x <= MAX_SPEED) {
-					vel.x += MOVE_SPEED;
+			if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+				if (vel.z >= -MAX_SPEED) {
+					vel.z -= MOVE_SPEED;
 				}
-			} else if (vel.x > MOVE_SPEED) {
-				vel.x -= MOVE_SPEED;
-			} else if (vel.x > 0) {
-				vel.x = 0;
+			} else if (vel.z < -MOVE_SPEED) {
+				vel.z += MOVE_SPEED;
+			} else if (vel.z < 0) {
+				vel.z = 0;
 			}
 
-			if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-				if (vel.x >= -MAX_SPEED) {
+			if (TURN_ON_DA) {
+				if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+					yaw -= TURN_SPEED;
+				}
+				if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+					yaw += TURN_SPEED;
+				}
+			} else {
+				calculateMouseTurn();
+				if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+					if (vel.x <= MAX_SPEED) {
+						vel.x += MOVE_SPEED;
+					}
+				} else if (vel.x > MOVE_SPEED) {
 					vel.x -= MOVE_SPEED;
+				} else if (vel.x > 0) {
+					vel.x = 0;
 				}
-			} else if (vel.x < -MOVE_SPEED) {
-				vel.x += MOVE_SPEED;
-			} else if (vel.x < 0) {
-				vel.x = 0;
-			}
-		}
 
-		newPos();
+				if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+					if (vel.x >= -MAX_SPEED) {
+						vel.x -= MOVE_SPEED;
+					}
+				} else if (vel.x < -MOVE_SPEED) {
+					vel.x += MOVE_SPEED;
+				} else if (vel.x < 0) {
+					vel.x = 0;
+				}
+			}
+			
+			newPos();
+		} catch (ArrayIndexOutOfBoundsException e) {
+			float terrainWidth = terrains[0].length*terrains[0][0].Z_SIZE;
+			float terrainLength = terrains.length*terrains[0][0].X_SIZE;
+			
+			position.x = (position.x - 1 + terrainLength) % terrainLength;
+			position.z = (position.z - 1 + terrainWidth) % terrainWidth;
+			
+			System.out.print("\n\n" + position.x + " " + position.z + "\n\n");
+			
+		}
+			
+		
 	}
 
 	private void calculateMouseTurn() {
@@ -131,8 +150,6 @@ public class FloatingCamera extends Camera {
 
 		float xMod = (float) (Math.sin(Math.toRadians(getMoveAngle())) * moveMag);
 		float zMod = (float) (Math.cos(Math.toRadians(getMoveAngle())) * moveMag);
-
-		System.out.print("\n\n" + getMoveAngle() + ' ' + xMod + ' ' + zMod + "\n\n");
 
 		if (!Double.isNaN(xMod)) {
 			position.x += xMod * position.y / HEIGHT_SPEED_MOD;
