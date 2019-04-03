@@ -35,9 +35,9 @@ public class SkyboxRenderer {
 	private int texture;
 	private SkyboxShader shader;
 
-	public SkyboxRenderer(Loader loader, Matrix4f projectionMatrix) {
-		cube = loader.loadToVAO(VERTICES, 3);
-		texture = loader.loadCube(TEXTURE_FILES);
+	public SkyboxRenderer(Matrix4f projectionMatrix) {
+		cube = Loader.loadToVAO(VERTICES, 3);
+		texture = Loader.loadCube(TEXTURE_FILES);
 		shader = new SkyboxShader();
 		shader.start();
 		shader.loadProjectionMatrix(projectionMatrix);
@@ -45,7 +45,6 @@ public class SkyboxRenderer {
 	}
 
 	public void render(Camera camera) {
-		System.out.println("hi");
 		shader.start();
 		shader.loadViewMatrix(camera);
 		GL30.glBindVertexArray(cube.getVaoID());

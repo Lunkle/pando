@@ -1,10 +1,11 @@
 package entities;
 
-import terrains.Terrain;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+
+import data.TerrainData;
+import terrains.Terrain;
 
 public class FloatingCamera extends Camera {
 	private Vector3f vel = new Vector3f(0, 0, 0);
@@ -32,16 +33,16 @@ public class FloatingCamera extends Camera {
 		yaw = 0;
 	}
 
-	public void move(Terrain[][] terrains) {
-		calculateLoc(terrains);
+	public void move(TerrainData terrainData) {
+		calculateLoc(terrainData);
 	}
 
-	private void calculateLoc(Terrain[][] terrains) {
-		System.out.print(Terrain.getHexagon(position.x, position.z, terrains));
-		
+	private void calculateLoc(TerrainData terrainData) {
+		System.out.print(terrainData.getHexagon(position.x, position.z));
+
 		try {
-			int minHeight = (int) (MIN_HEIGHT + Terrain.getHeightOfHexagonMeshTerrain(Terrain.getHexagon(position.x, position.z, terrains), terrains));
-			
+			int minHeight = (int) (MIN_HEIGHT + terrainData.getHeightByWorldCoords(position.x, position.z));
+
 			if (Math.abs(vel.y) < MAX_ZOOM_SPEED)
 				vel.y -= Mouse.getDWheel() * 0.01f;
 
@@ -106,20 +107,19 @@ public class FloatingCamera extends Camera {
 					vel.x = 0;
 				}
 			}
-			
+
 			newPos();
 		} catch (ArrayIndexOutOfBoundsException e) {
-			float terrainWidth = terrains[0].length*terrains[0][0].Z_SIZE;
-			float terrainLength = terrains.length*terrains[0][0].X_SIZE;
-			
+			float terrainWidth = terrainData.terrainGrid[0].length * Terrain.Z_SIZE;
+			float terrainLength = terrainData.terrainGrid.length * Terrain.X_SIZE;
+
 			position.x = (position.x - 1 + terrainLength) % terrainLength;
 			position.z = (position.z - 1 + terrainWidth) % terrainWidth;
-			
+
 			System.out.print("\n\n" + position.x + " " + position.z + "\n\n");
-			
+
 		}
-			
-		
+
 	}
 
 	private void calculateMouseTurn() {

@@ -3,9 +3,9 @@ package entities;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 
+import data.TerrainData;
 import models.TexturedModel;
 import renderEngine.DisplayManager;
-import terrains.Terrain;
 
 public class Player extends Entity {
 
@@ -25,7 +25,7 @@ public class Player extends Entity {
 		super(model, position, rotX, rotY, rotZ, scale);
 	}
 
-	public void move(Terrain[][] terrains) {
+	public void move(TerrainData terrainData) {
 		checkInputs();
 		float frameTime = DisplayManager.getFrameTimeSeconds();
 		super.increaseRotation(0, currentTurnSpeed * frameTime, 0);
@@ -34,7 +34,7 @@ public class Player extends Entity {
 		float xDisplacement = (float) (Math.sin(Math.toRadians(getRotY())) * distance);
 		float zDisplacement = (float) (Math.cos(Math.toRadians(getRotY())) * distance);
 		super.increasePosition(xDisplacement, upwardsSpeed * frameTime, zDisplacement);
-		float terrainHeight = Terrain.getHeightOfHexagonMeshTerrain(Terrain.getHexagon(super.getPosition().x, super.getPosition().z, terrains), terrains);
+		float terrainHeight = terrainData.getHeightByWorldCoords(super.getPosition().x, super.getPosition().z);
 //		float terrainHeight = 0;
 		if (super.getPosition().y <= terrainHeight) {
 			upwardsSpeed = 0;
