@@ -3,7 +3,6 @@ package terrains;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.lwjgl.util.vector.Vector3f;
 
@@ -14,8 +13,8 @@ import textures.TerrainTexturePack;
 
 public class Terrain {
 
-	public static final int NUM_HEXAGONS_X = 10;
-	public static final int NUM_HEXAGONS_Z = 10;
+	public static final int NUM_HEXAGONS_X = 100;
+	public static final int NUM_HEXAGONS_Z = 100;
 	public static final float HEXAGON_SIDE_LENGTH = 1f;
 	public static final float HEXAGON_SQRTHREE_LENGTH = HEXAGON_SIDE_LENGTH * (float) Math.sqrt(3);
 	public static final float HEXAGON_HALF_SQRTHREE_LENGTH = HEXAGON_SQRTHREE_LENGTH / 2;
@@ -96,7 +95,7 @@ public class Terrain {
 			float terrainSizeX = (NUM_HEXAGONS_X + 0.5f) * HEXAGON_SQRTHREE_LENGTH;
 			float terrainSizeY = (NUM_HEXAGONS_Z * 1.5f + 0.5f) * HEXAGON_SIDE_LENGTH;
 			while (rowNumber < NUM_HEXAGONS_Z && (line = reader.readLine()) != null) {
-				data = line.split(",");				
+				data = line.split(",");
 				for (int columnNumber = 0; columnNumber < NUM_HEXAGONS_X; columnNumber++) {
 					float height = Float.parseFloat(data[columnNumber]);
 					heights[rowNumber][columnNumber] = height;

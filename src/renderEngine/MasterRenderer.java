@@ -81,11 +81,9 @@ public class MasterRenderer {
 		entities.clear();
 	}
 
-	public void processTerrainData(TerrainData terrainData) {
-		for (Terrain[] terrainArray : terrainData.terrainGrid) {
-			for (Terrain terrain : terrainArray) {
-				terrains.add(terrain);
-			}
+	public void processTerrainData(TerrainData terrainData, Camera camera) {
+		for (Terrain terrain : terrainData.getClosestTerrains(camera, 2)) {
+			terrains.add(terrain);
 		}
 	}
 
