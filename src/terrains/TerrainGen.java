@@ -3,6 +3,8 @@ package terrains;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class TerrainGen {
 
@@ -24,20 +26,22 @@ public class TerrainGen {
 	public void makeDefaultFile() {
 		System.out.println("Writing to a map file");
 		BufferedWriter writer = null;
+		
 		try {
 			// Write to a new file named fileName in location
 			writer = new BufferedWriter(new FileWriter(location + "/" + fileName + ".txt"));
 
 			// Write y lines of x zeros
 			for (int i = 0; i < y; i++) {
-				writer.write('\n');
-				writer.write("" + 0);// (i));
-				for (int j = 0; j < x - 1; j++) {
-					writer.write("," + 0);// (i + j + 1));
-//					double height = (ImprovedNoise.noise(i * 100, j * 100, 0) * 500);
-//					System.out.println(height);
-//					writer.write(height + ((j == x - 1) ? "" : ","));
+//				writer.write('\n');
+//				writer.write("" + (int)(ImprovedNoise.noise(i, 0, 0)));// (i));
+				for (int j = 0; j < x; j++) {
+//					writer.write("," + (int)(ImprovedNoise.noise(i, j, 0)));// (i + j + 1));
+					Double height = round(ImprovedNoise.noise(map(i, 0, y, i, i+1f), map(j, 0, y, j, j+1f), 0)*5, 3);
+					System.out.println(height);
+					writer.write(height + ((j == x) ? "" : ","));
 				}
+				writer.write('\n');
 			}
 			writer.flush();
 			closeWriter(writer);
@@ -50,6 +54,19 @@ public class TerrainGen {
 		}
 	}
 
+	private float map(float x, float in_min, float in_max, float out_min, float out_max)
+	{
+		return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+	}
+	
+	public static double round(double value, int places) {
+	    if (places < 0) throw new IllegalArgumentException();
+
+	    BigDecimal bd = new BigDecimal(value);
+	    bd = bd.setScale(places, RoundingMode.HALF_UP);
+	    return bd.doubleValue();
+	}
+	
 	private void closeWriter(BufferedWriter writer) {
 		try {
 			writer.close();

@@ -76,7 +76,7 @@ public class Terrain {
 
 	private RawModel generateHexagonMeshTerrain(String heightMap) {
 		BufferedReader reader = null;
-		int[] data;
+		String[] data;
 		try {
 			reader = new BufferedReader(new FileReader("res/" + heightMap + ".txt"));
 		} catch (IOException e) {
@@ -96,9 +96,9 @@ public class Terrain {
 			float terrainSizeX = (NUM_HEXAGONS_X + 0.5f) * HEXAGON_SQRTHREE_LENGTH;
 			float terrainSizeY = (NUM_HEXAGONS_Z * 1.5f + 0.5f) * HEXAGON_SIDE_LENGTH;
 			while (rowNumber < NUM_HEXAGONS_Z && (line = reader.readLine()) != null) {
-				data = Arrays.stream(line.split(",")).mapToInt(Integer::parseInt).toArray();
+				data = line.split(",");				
 				for (int columnNumber = 0; columnNumber < NUM_HEXAGONS_X; columnNumber++) {
-					float height = data[columnNumber] / 2.0f;
+					float height = Float.parseFloat(data[columnNumber]);
 					heights[rowNumber][columnNumber] = height;
 					float referencePointX = HEXAGON_SQRTHREE_LENGTH * (columnNumber + (isOffsetFromLeft ? 0.5f : 0));
 					float referencePointZ = 1.5f * HEXAGON_SIDE_LENGTH * rowNumber;

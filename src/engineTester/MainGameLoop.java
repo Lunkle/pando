@@ -23,6 +23,7 @@ import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
 import terrains.Terrain;
+import terrains.TerrainGen;
 import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
@@ -50,6 +51,9 @@ public class MainGameLoop {
 //		RawModel rawOakTreeStage2Model = loader.loadToVAO(oakTreeStage2Data);
 //		TexturedModel oakTreeStage2Model = new TexturedModel(rawOakTreeStage2Model, new ModelTexture(loader.loadTexture("oakTreeStage2")));
 
+		TerrainGen gen = new TerrainGen(10, 10, "map", "res");
+		gen.makeDefaultFile();
+		
 		List<Entity> ferns = new ArrayList<Entity>();
 		List<Entity> oaks = new ArrayList<Entity>();
 		Entity centerSprout = new Entity(oakTreeStage1Model, new Vector3f(0, 0, 0), 0, 0, 0, 1);
@@ -90,9 +94,6 @@ public class MainGameLoop {
 
 		MasterRenderer masterRenderer = new MasterRenderer();
 		GUIRenderer guiRenderer = new GUIRenderer();
-
-//		TerrainGen gen = new TerrainGen(10, 10, "map", "res");
-//		gen.makeDefaultFile();
 
 		MousePicker picker = new MousePicker(camera, masterRenderer.getProjectionMatrix());
 
