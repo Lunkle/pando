@@ -85,7 +85,7 @@ public class MainGameLoop {
 		guis.add(gui);
 
 		Player player = new Player(oakTreeStage1Model, new Vector3f(10, 0, 15), 0.0f, 0.0f, 0.0f, 1f);
-		FloatingCamera camera = new FloatingCamera(0, 0);
+		FloatingCamera camera = new FloatingCamera(10, 10);
 //		ThirdPersonCamera camera = new ThirdPersonCamera(player);
 
 		MasterRenderer masterRenderer = new MasterRenderer();

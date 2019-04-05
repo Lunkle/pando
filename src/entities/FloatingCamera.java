@@ -113,10 +113,8 @@ public class FloatingCamera extends Camera {
 			float terrainWidth = terrainData.terrainGrid[0].length * Terrain.Z_SIZE;
 			float terrainLength = terrainData.terrainGrid.length * Terrain.X_SIZE;
 
-			position.x = (position.x - 1 + terrainLength) % terrainLength;
-			position.z = (position.z - 1 + terrainWidth) % terrainWidth;
-
-			System.out.print("\n\n" + position.x + " " + position.z + "\n\n");
+			position.x = (position.x-0.25f + terrainLength) % (terrainLength) + vel.x;
+			position.z =(position.z-0.25f + terrainWidth) % (terrainWidth) +vel.z;
 
 		}
 
