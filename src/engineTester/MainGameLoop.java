@@ -51,7 +51,7 @@ public class MainGameLoop {
 //		RawModel rawOakTreeStage2Model = loader.loadToVAO(oakTreeStage2Data);
 //		TexturedModel oakTreeStage2Model = new TexturedModel(rawOakTreeStage2Model, new ModelTexture(loader.loadTexture("oakTreeStage2")));
 
-		TerrainGen gen = new TerrainGen(10, 10, "map", "res");
+		TerrainGen gen = new TerrainGen(100, 10, 100, 10, "map", "res");
 		gen.makeDefaultFile();
 		
 		List<Entity> ferns = new ArrayList<Entity>();

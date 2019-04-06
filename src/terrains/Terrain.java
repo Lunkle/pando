@@ -14,8 +14,8 @@ import textures.TerrainTexturePack;
 
 public class Terrain {
 
-	public static final int NUM_HEXAGONS_X = 10;
-	public static final int NUM_HEXAGONS_Z = 10;
+	public static final int NUM_HEXAGONS_X = 25;
+	public static final int NUM_HEXAGONS_Z = 25;
 	public static final float HEXAGON_SIDE_LENGTH = 1f;
 	public static final float HEXAGON_SQRTHREE_LENGTH = HEXAGON_SIDE_LENGTH * (float) Math.sqrt(3);
 	public static final float HEXAGON_HALF_SQRTHREE_LENGTH = HEXAGON_SQRTHREE_LENGTH / 2;
@@ -30,6 +30,8 @@ public class Terrain {
 
 	private float x;
 	private float z;
+	private int gridX;
+	private int gridZ;
 	private RawModel model;
 	private TerrainTexturePack texturePack;
 	private TerrainTexture blendMap;
@@ -41,6 +43,8 @@ public class Terrain {
 		this.blendMap = blendMap;
 		x = gridX * X_SIZE;
 		z = gridZ * Z_SIZE;
+		this.gridX = gridX;
+		this.gridZ = gridZ;
 		model = generateHexagonMeshTerrain(heightMap);
 	}
 
@@ -95,10 +99,15 @@ public class Terrain {
 			boolean isOffsetFromLeft = false;
 			float terrainSizeX = (NUM_HEXAGONS_X + 0.5f) * HEXAGON_SQRTHREE_LENGTH;
 			float terrainSizeY = (NUM_HEXAGONS_Z * 1.5f + 0.5f) * HEXAGON_SIDE_LENGTH;
+			reader.skip(gridZ*NUM_HEXAGONS_Z);
+			for (int i = 0; i < gridZ*NUM_HEXAGONS_Z; i++) {
+				reader.readLine();
+			}
 			while (rowNumber < NUM_HEXAGONS_Z && (line = reader.readLine()) != null) {
-				data = line.split(",");				
+				data = line.split(",");	
+				System.out.println(gridX+" "+gridZ+" "+" "+rowNumber);
 				for (int columnNumber = 0; columnNumber < NUM_HEXAGONS_X; columnNumber++) {
-					float height = Float.parseFloat(data[columnNumber]);
+					float height = Float.parseFloat(data[columnNumber+gridX*NUM_HEXAGONS_X]);
 					heights[rowNumber][columnNumber] = height;
 					float referencePointX = HEXAGON_SQRTHREE_LENGTH * (columnNumber + (isOffsetFromLeft ? 0.5f : 0));
 					float referencePointZ = 1.5f * HEXAGON_SIDE_LENGTH * rowNumber;
@@ -167,6 +176,12 @@ public class Terrain {
 			}
 			offset = !offset;
 			startingVerticeIndex += 6;
+		}
+		try {
+			reader.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return Loader.loadToVAO(vertices, textureCoords, normals, indices);
 	}

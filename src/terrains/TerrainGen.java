@@ -11,14 +11,19 @@ public class TerrainGen {
 	// X and Y dimensions
 	private int y;
 	private int x;
+	
+	private int width;
+	private int height;
 
 	// File data
 	private String fileName;
 	private String location;
 
-	public TerrainGen(int x, int y, String fileName, String location) {
+	public TerrainGen(int x, int width, int y, int height, String fileName, String location) {
 		this.x = x;
 		this.y = y;
+		this.width = width;
+		this.height = height;
 		this.fileName = fileName;
 		this.location = location;
 	}
@@ -26,23 +31,28 @@ public class TerrainGen {
 	public void makeDefaultFile() {
 		System.out.println("Writing to a map file");
 		BufferedWriter writer = null;
-		
+		int c = 0;
 		try {
 			// Write to a new file named fileName in location
 			writer = new BufferedWriter(new FileWriter(location + "/" + fileName + ".txt"));
 
 			// Write y lines of x zeros
-			for (int i = 0; i < y; i++) {
-//				writer.write('\n');
-//				writer.write("" + (int)(ImprovedNoise.noise(i, 0, 0)));// (i));
-				for (int j = 0; j < x; j++) {
-//					writer.write("," + (int)(ImprovedNoise.noise(i, j, 0)));// (i + j + 1));
-					Double height = round(ImprovedNoise.noise(map(i, 0, y, i, i+1f), map(j, 0, y, j, j+1f), 0)*5, 3);
-					System.out.println(height);
-					writer.write(height + ((j == x) ? "" : ","));
+			for (int yh = 0; yh < this.height; yh++) {
+				for (int i = 0; i < y; i++) {
+	//				writer.write('\n');
+	//				writer.write("" + (int)(ImprovedNoise.noise(i, 0, 0)));// (i));
+					for (int xw = 0; xw < width; xw++) {
+						for (int j = 0; j < x; j++) {
+		//					writer.write("," + (int)(ImprovedNoise.noise(i, j, 0)));// (i + j + 1));
+							double height = round(ImprovedNoise.noise(map(j, 0, x, xw, xw+1), map(i, 0, y, yh, yh+1), 0)*50, 3);
+							writer.write(height + ",");
+							c++;
+						}
+					}
+					writer.write('\n');
 				}
-				writer.write('\n');
 			}
+			System.out.println(height);
 			writer.flush();
 			closeWriter(writer);
 		} catch (Exception e) {
@@ -106,7 +116,7 @@ public class TerrainGen {
 					grad(p[BA], x - 1, y, z)), // BLENDED
 					lerp(u, grad(p[AB], x, y - 1, z), // RESULTS
 							grad(p[BB], x - 1, y - 1, z))), // FROM 8
-					lerp(v, lerp(u, grad(p[AA + 1], x, y, z - 1), // CORNERS
+					lerp(v, lerp(u, grad(p[AA + 2], x, y, z - 1), // CORNERS
 							grad(p[BA + 1], x - 1, y, z - 1)), // OF CUBE
 							lerp(u, grad(p[AB + 1], x, y - 1, z - 1), grad(p[BB + 1], x - 1, y - 1, z - 1))));
 		}
