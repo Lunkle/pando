@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Random;
 
 public class TerrainGen {
 
@@ -18,6 +19,9 @@ public class TerrainGen {
 	// File data
 	private String fileName;
 	private String location;
+	
+	private final float FREQUENCY = 8;
+	private final float AMPLITUDE = 10;
 
 	public TerrainGen(int x, int width, int y, int height, String fileName, String location) {
 		this.x = x;
@@ -44,14 +48,16 @@ public class TerrainGen {
 					for (int xw = 0; xw < width; xw++) {
 						for (int j = 0; j < x; j++) {
 		//					writer.write("," + (int)(ImprovedNoise.noise(i, j, 0)));// (i + j + 1));
-							double height = round(ImprovedNoise.noise(map(j, 0, x, xw, xw+1), map(i, 0, y, yh, yh+1), 0)*50, 3);
+							double height = round((ImprovedNoise.noise(map(j, 0, x, xw, xw+1)*FREQUENCY, map(i, 0, y, yh, yh+1)*FREQUENCY, 0)*AMPLITUDE/4+
+												   ImprovedNoise.noise(map(j, 0, x, xw, xw+1)*FREQUENCY/2, map(i, 0, y, yh, yh+1)*FREQUENCY/2, 0)*AMPLITUDE/2)+
+												   Math.min(ImprovedNoise.noise(map(j, 0, x, xw, xw+1)*FREQUENCY/10, map(i, 0, y, yh, yh+1)*FREQUENCY/10, 0)*AMPLITUDE*2-25, -10)+
+												   Math.min(ImprovedNoise.noise(map(j, 0, x, xw, xw+1)*FREQUENCY/30, map(i, 0, y, yh, yh+1)*FREQUENCY/30, 0)*AMPLITUDE*6-50, 0), 3);
 							writer.write(height + ",");
 						}
 					}
 					writer.write('\n');
 				}
 			}
-			System.out.println(height);
 			writer.flush();
 			closeWriter(writer);
 		} catch (Exception e) {
@@ -140,7 +146,20 @@ public class TerrainGen {
 				116, 188, 159, 86, 164, 100, 109, 198, 173, 186, 3, 64, 52, 217, 226, 250, 124, 123, 5, 202, 38, 147, 118, 126, 255, 82, 85, 212, 207, 206, 59, 227, 47, 16, 58, 17, 182, 189, 28, 42, 223, 183, 170, 213, 119, 248, 152, 2, 44, 154, 163, 70, 221, 153, 101, 155, 167, 43, 172, 9, 129, 22,
 				39, 253, 19, 98, 108, 110, 79, 113, 224, 232, 178, 185, 112, 104, 218, 246, 97, 228, 251, 34, 242, 193, 238, 210, 144, 12, 191, 179, 162, 241, 81, 51, 145, 235, 249, 14, 239, 107, 49, 192, 214, 31, 181, 199, 106, 157, 184, 84, 204, 176, 115, 121, 50, 45, 127, 4, 150, 254, 138, 236,
 				205, 93, 222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66, 215, 61, 156, 180 };
+		static void shuffleArray(int[] array)
+		{
+		    int index, temp;
+		    Random random = new Random();
+		    for (int i = array.length - 1; i > 0; i--)
+		    {
+		        index = random.nextInt(i + 1);
+		        temp = array[index];
+		        array[index] = array[i];
+		        array[i] = temp;
+		    }
+		}
 		static {
+			shuffleArray(permutation);
 			for (int i = 0; i < 256; i++)
 				p[256 + i] = p[i] = permutation[i];
 		}

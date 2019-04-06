@@ -16,12 +16,12 @@ public class FloatingCamera extends Camera {
 	private final int START_HEIGHT = 50;
 	private final float TURN_SPEED = 2.5f;
 	private final boolean TURN_ON_DA = false;
-	private final float MOVE_SPEED = 0.05f;
+	private final float MOVE_SPEED = 0.025f;
 	private final float MAX_SPEED = 1;
 	private final float HEIGHT_SPEED_MOD = 50f;
 	private final float MAX_ZOOM_SPEED = 3f;
-	private final int MIN_HEIGHT = 5;
-	private final int MAX_HEIGHT = 100;
+	private final int MIN_HEIGHT = 25;
+	private final int MAX_HEIGHT = 150;
 
 	public FloatingCamera(int startX, int startZ) {
 		position.x = startX;
@@ -38,8 +38,6 @@ public class FloatingCamera extends Camera {
 	}
 
 	private void calculateLoc(TerrainData terrainData) {
-		System.out.print(terrainData.getHexagon(position.x, position.z));
-
 		try {
 			int minHeight = (int) (MIN_HEIGHT + terrainData.getHeightByWorldCoords(position.x, position.z));
 
@@ -107,8 +105,7 @@ public class FloatingCamera extends Camera {
 					vel.x = 0;
 				}
 			}
-
-			newPos();
+			newPos(minHeight);
 		} catch (ArrayIndexOutOfBoundsException e) {
 			float terrainWidth = terrainData.terrainGrid[0].length * Terrain.Z_SIZE;
 			float terrainLength = terrainData.terrainGrid.length * Terrain.X_SIZE;
@@ -138,7 +135,7 @@ public class FloatingCamera extends Camera {
 		}
 	}
 
-	private void newPos() {
+	private void newPos(int minHeight) {
 		double moveMag = Math.sqrt(Math.pow(vel.x, 2) + Math.pow(vel.z, 2));
 
 		// Limits speed
@@ -150,10 +147,10 @@ public class FloatingCamera extends Camera {
 		float zMod = (float) (Math.cos(Math.toRadians(getMoveAngle())) * moveMag);
 
 		if (!Double.isNaN(xMod)) {
-			position.x += xMod * position.y / HEIGHT_SPEED_MOD;
+			position.x += xMod * Math.abs(position.y-minHeight+10) / HEIGHT_SPEED_MOD;
 		}
 		if (!Double.isNaN(zMod)) {
-			position.z += zMod * position.y / HEIGHT_SPEED_MOD;
+			position.z += zMod * Math.abs(position.y-minHeight+10) / HEIGHT_SPEED_MOD;
 		}
 	}
 
