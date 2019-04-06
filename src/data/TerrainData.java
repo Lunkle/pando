@@ -2,6 +2,7 @@ package data;
 
 import org.lwjgl.util.vector.Vector2f;
 
+import entities.Camera;
 import terrains.Terrain;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
@@ -73,6 +74,44 @@ public class TerrainData {
 		int terrainHexX = worldHexX % Terrain.NUM_HEXAGONS_X;
 		int terrainHexZ = worldHexZ % Terrain.NUM_HEXAGONS_Z;
 		return terrainGrid[terrainGridZ][terrainGridX].heights[terrainHexZ][terrainHexX];
+	}
+
+	public Vector2f getTerrain(Vector2f worldCoords, int range) {
+		return getTerrain(worldCoords.x, worldCoords.y, range);
+	}
+
+	public Vector2f getTerrain(float worldPosX, float worldPosZ, int range) {
+		int terrainGridX = (int) Math.floor(worldPosX / Terrain.X_SIZE);
+		int terrainGridZ = (int) Math.floor(worldPosZ / Terrain.Z_SIZE);
+		return new Vector2f(terrainGridX, terrainGridZ);
+	}
+
+	private int getTerrainBoundedX(int value) {
+		return Math.max(0, Math.min(value, terrainGrid[0].length - 1));
+	}
+
+	private int getTerrainBoundedY(int value) {
+		return Math.max(0, Math.min(value, terrainGrid.length - 1));
+	}
+
+	public Terrain[] getClosestTerrains(Camera camera, int range) {
+		Vector2f cameraCoords = new Vector2f(camera.getPosition().x, camera.getPosition().z);
+		Vector2f centerTerrain = getTerrain(cameraCoords, range);
+		int yMin = getTerrainBoundedY((int) (centerTerrain.y - range));
+		int yMax = getTerrainBoundedY((int) (centerTerrain.y + range));
+		int xMin = getTerrainBoundedX((int) (centerTerrain.x - range));
+		int xMax = getTerrainBoundedX((int) (centerTerrain.x + range));
+		Terrain[] terrains = new Terrain[(yMax - yMin + 1) * (xMax - xMin + 1)];
+		int index = 0;
+		System.out.println(centerTerrain + " " + (centerTerrain.y - range));
+		System.out.println(yMin + " " + yMax + " " + xMin + " " + xMax);
+		for (int i = yMin; i < yMax + 1; i++) {
+			for (int j = xMin; j < xMax + 1; j++) {
+				terrains[index] = terrainGrid[j][i];
+				index++;
+			}
+		}
+		return terrains;
 	}
 
 }

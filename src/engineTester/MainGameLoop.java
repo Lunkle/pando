@@ -52,8 +52,9 @@ public class MainGameLoop {
 //		TexturedModel oakTreeStage2Model = new TexturedModel(rawOakTreeStage2Model, new ModelTexture(loader.loadTexture("oakTreeStage2")));
 
 		TerrainGen gen = new TerrainGen(100, 10, 100, 10, "map", "res");
+
 		gen.makeDefaultFile();
-		
+
 		List<Entity> ferns = new ArrayList<Entity>();
 		List<Entity> oaks = new ArrayList<Entity>();
 		Entity centerSprout = new Entity(oakTreeStage1Model, new Vector3f(0, 0, 0), 0, 0, 0, 1);
@@ -105,7 +106,7 @@ public class MainGameLoop {
 			System.out.println(picker.getCurrentRay());
 
 			masterRenderer.processEntity(player);
-			masterRenderer.processTerrainData(terrainData);
+			masterRenderer.processTerrainData(terrainData, camera);
 			for (Entity fern : ferns) {
 				masterRenderer.processEntity(fern);
 			}
