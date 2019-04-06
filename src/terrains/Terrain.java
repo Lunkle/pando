@@ -15,12 +15,12 @@ public class Terrain {
 
 	public static final int NUM_HEXAGONS_X = 100;
 	public static final int NUM_HEXAGONS_Z = 100;
-	public static final float HEXAGON_SIDE_LENGTH = 1f;
-	public static final float HEXAGON_SQRTHREE_LENGTH = HEXAGON_SIDE_LENGTH * (float) Math.sqrt(3);
-	public static final float HEXAGON_HALF_SQRTHREE_LENGTH = HEXAGON_SQRTHREE_LENGTH / 2;
-	public static final float HEXAGON_MINIMUM_TRIANGLE_SIZE = HEXAGON_SIDE_LENGTH * HEXAGON_HALF_SQRTHREE_LENGTH;
-	public static final float X_SIZE = NUM_HEXAGONS_X * HEXAGON_SQRTHREE_LENGTH;
-	public static final float Z_SIZE = 1.5f * NUM_HEXAGONS_Z * HEXAGON_SIDE_LENGTH;
+	public static final float HEX_SIDE = 1f;
+	public static final float HEX_SQRT3 = HEX_SIDE * (float) Math.sqrt(3);
+	public static final float HEX_HALF_SQR3 = HEX_SQRT3 / 2;
+	public static final float HEX_MIN_TRI_AREA = HEX_SIDE * HEX_HALF_SQR3;
+	public static final float X_SIZE = NUM_HEXAGONS_X * HEX_SQRT3;
+	public static final float Z_SIZE = 1.5f * NUM_HEXAGONS_Z * HEX_SIDE;
 
 	// Number of indices constructing the hexagons
 	public static final int NUM_INDICES_CONTRUCTING_HEX = NUM_HEXAGONS_X * NUM_HEXAGONS_Z * 12;
@@ -96,8 +96,8 @@ public class Terrain {
 			String line;
 			int rowNumber = 0;
 			boolean isOffsetFromLeft = false;
-			float terrainSizeX = (NUM_HEXAGONS_X + 0.5f) * HEXAGON_SQRTHREE_LENGTH;
-			float terrainSizeY = (NUM_HEXAGONS_Z * 1.5f + 0.5f) * HEXAGON_SIDE_LENGTH;
+			float terrainSizeX = (NUM_HEXAGONS_X + 0.5f) * HEX_SQRT3;
+			float terrainSizeY = (NUM_HEXAGONS_Z * 1.5f + 0.5f) * HEX_SIDE;
 			reader.skip(gridZ*NUM_HEXAGONS_Z);
 			for (int i = 0; i < gridZ*NUM_HEXAGONS_Z; i++) {
 				reader.readLine();
@@ -107,25 +107,25 @@ public class Terrain {
 				for (int columnNumber = 0; columnNumber < NUM_HEXAGONS_X; columnNumber++) {
 					float height = Float.parseFloat(data[columnNumber+gridX*NUM_HEXAGONS_X]);
 					heights[rowNumber][columnNumber] = height;
-					float referencePointX = HEXAGON_SQRTHREE_LENGTH * (columnNumber + (isOffsetFromLeft ? 0.5f : 0));
-					float referencePointZ = 1.5f * HEXAGON_SIDE_LENGTH * rowNumber;
+					float referencePointX = HEX_SQRT3 * (columnNumber + (isOffsetFromLeft ? 0.5f : 0));
+					float referencePointZ = 1.5f * HEX_SIDE * rowNumber;
 					int startingVerticeIndex = 18 * (rowNumber * NUM_HEXAGONS_X + columnNumber);
-					vertices[startingVerticeIndex] = referencePointX + HEXAGON_HALF_SQRTHREE_LENGTH;
+					vertices[startingVerticeIndex] = referencePointX + HEX_HALF_SQR3;
 					vertices[startingVerticeIndex + 2] = referencePointZ;
 					vertices[startingVerticeIndex + 3] = referencePointX;
-					vertices[startingVerticeIndex + 5] = referencePointZ + 0.5f * HEXAGON_SIDE_LENGTH;
+					vertices[startingVerticeIndex + 5] = referencePointZ + 0.5f * HEX_SIDE;
 					vertices[startingVerticeIndex + 6] = referencePointX;
-					vertices[startingVerticeIndex + 8] = referencePointZ + 1.5f * HEXAGON_SIDE_LENGTH;
-					vertices[startingVerticeIndex + 9] = referencePointX + HEXAGON_HALF_SQRTHREE_LENGTH;
-					vertices[startingVerticeIndex + 11] = referencePointZ + 2 * HEXAGON_SIDE_LENGTH;
-					vertices[startingVerticeIndex + 12] = referencePointX + HEXAGON_SQRTHREE_LENGTH;
-					vertices[startingVerticeIndex + 14] = referencePointZ + 1.5f * HEXAGON_SIDE_LENGTH;
-					vertices[startingVerticeIndex + 15] = referencePointX + HEXAGON_SQRTHREE_LENGTH;
-					vertices[startingVerticeIndex + 17] = referencePointZ + 0.5f * HEXAGON_SIDE_LENGTH;
+					vertices[startingVerticeIndex + 8] = referencePointZ + 1.5f * HEX_SIDE;
+					vertices[startingVerticeIndex + 9] = referencePointX + HEX_HALF_SQR3;
+					vertices[startingVerticeIndex + 11] = referencePointZ + 2 * HEX_SIDE;
+					vertices[startingVerticeIndex + 12] = referencePointX + HEX_SQRT3;
+					vertices[startingVerticeIndex + 14] = referencePointZ + 1.5f * HEX_SIDE;
+					vertices[startingVerticeIndex + 15] = referencePointX + HEX_SQRT3;
+					vertices[startingVerticeIndex + 17] = referencePointZ + 0.5f * HEX_SIDE;
 					for (int i = 0; i < 6; i++) {
 						vertices[startingVerticeIndex + 1 + i * 3] = height;
 					}
-					Vector3f center = new Vector3f(referencePointX + HEXAGON_HALF_SQRTHREE_LENGTH, height, referencePointZ + HEXAGON_SIDE_LENGTH);
+					Vector3f center = new Vector3f(referencePointX + HEX_HALF_SQR3, height, referencePointZ + HEX_SIDE);
 					for (int i = 0; i < 6; i++) {
 						Vector3f vertice = new Vector3f(vertices[startingVerticeIndex + i * 3], height, vertices[startingVerticeIndex + i * 3 + 2]);
 						Vector3f normal = calculateHexagonMeshNormal(center, vertice);

@@ -23,7 +23,6 @@ import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
 import terrains.Terrain;
-import terrains.TerrainGen;
 import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
@@ -51,9 +50,8 @@ public class MainGameLoop {
 //		RawModel rawOakTreeStage2Model = loader.loadToVAO(oakTreeStage2Data);
 //		TexturedModel oakTreeStage2Model = new TexturedModel(rawOakTreeStage2Model, new ModelTexture(loader.loadTexture("oakTreeStage2")));
 
-		TerrainGen gen = new TerrainGen(100, 10, 100, 10, "map", "res");
-
-		gen.makeDefaultFile();
+//		TerrainGen gen = new TerrainGen(100, 10, 100, 10, "map", "res");
+//		gen.makeDefaultFile();
 
 		List<Entity> ferns = new ArrayList<Entity>();
 		List<Entity> oaks = new ArrayList<Entity>();
@@ -112,8 +110,7 @@ public class MainGameLoop {
 			}
 			Vector3f pPos = player.getPosition();
 			Vector2f coords = terrainData.getHexagon(pPos.x, pPos.z);
-			centerSprout.setPosition(new Vector3f((coords.y % 2) * Terrain.HEXAGON_HALF_SQRTHREE_LENGTH + coords.x * Terrain.HEXAGON_SQRTHREE_LENGTH + Terrain.HEXAGON_HALF_SQRTHREE_LENGTH, terrainData.getHeightByHexCoords((int) coords.x, (int) coords.y),
-					coords.y * 1.5f * Terrain.HEXAGON_SIDE_LENGTH + Terrain.HEXAGON_SIDE_LENGTH));
+			centerSprout.setPosition(new Vector3f((coords.y % 2) * Terrain.HEX_HALF_SQR3 + coords.x * Terrain.HEX_SQRT3 + Terrain.HEX_HALF_SQR3, terrainData.getHeightByHexCoords((int) coords.x, (int) coords.y), coords.y * 1.5f * Terrain.HEX_SIDE + Terrain.HEX_SIDE));
 
 			masterRenderer.processEntity(centerSprout);
 

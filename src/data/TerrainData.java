@@ -1,5 +1,12 @@
 package data;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
+
 import org.lwjgl.util.vector.Vector2f;
 
 import entities.Camera;
@@ -16,6 +23,10 @@ public class TerrainData {
 
 	public Terrain terrainGrid[][];
 
+	public enum Direction {
+		DOWN_LEFT, DOWN_RIGHT, LEFT, RIGHT, UP_LEFT, UP_RIGHT
+	}
+
 	public TerrainData(int gridSizeX, int gridSizeZ, TerrainTexturePack texturePack, TerrainTexture blendMap) {
 		terrainGrid = new Terrain[gridSizeZ][gridSizeX];
 		for (int i = 0; i < terrainGrid.length; i++) {
@@ -25,13 +36,53 @@ public class TerrainData {
 		}
 	}
 
-	public Vector2f getHexagon(float worldX, float worldZ) {
-		int worldHexZ = (int) Math.floor(worldZ / (Terrain.HEXAGON_SIDE_LENGTH * 1.5));
-		int isOffset = worldHexZ % 2;
-		float xOffset = Terrain.HEXAGON_HALF_SQRTHREE_LENGTH * isOffset;
-		int worldHexX = (int) Math.floor((worldX - xOffset) / Terrain.HEXAGON_SQRTHREE_LENGTH);
+	public static void readData(String location) {
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new FileReader("res/terrainData/" + location + ".txt"));
+		} catch (IOException e) {
+			System.out.println("Failed to read any data from height map at res/" + location + ".txt");
+			e.printStackTrace();
+		}
+		try {
+			String line;
+			try (Stream<String> lines = Files.lines(Paths.get("res/terrainData/" + location + ".txt"))) {
+				line = lines.skip(100).findFirst().get();
+			}
+			System.out.println(line);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-		float tileZ = worldZ % (Terrain.HEXAGON_SIDE_LENGTH * 1.5f);
+	public void loadTerrainDataFromFile() {
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new FileReader("res/terrainData.txt"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public Vector2f hexToWorldCoords(Vector2f hexCoords) {
+		return hexToWorldCoords((int) hexCoords.x, (int) hexCoords.y);
+	}
+
+	public static Vector2f hexToWorldCoords(int hexCoordX, int hexCoordZ) {
+		return new Vector2f((hexCoordZ % 2) * Terrain.HEX_HALF_SQR3 + (hexCoordX + 0.5f) * Terrain.HEX_SQRT3, (hexCoordZ * 1.5f + 1) * Terrain.HEX_SIDE);
+	}
+
+	public Vector2f getHexagon(Vector2f worldLocation) {
+		return getHexagon(worldLocation.x, worldLocation.y);
+	}
+
+	public Vector2f getHexagon(float worldX, float worldZ) {
+		int worldHexZ = (int) Math.floor(worldZ / (Terrain.HEX_SIDE * 1.5));
+		int isOffset = worldHexZ % 2;
+		float xOffset = Terrain.HEX_HALF_SQR3 * isOffset;
+		int worldHexX = (int) Math.floor((worldX - xOffset) / Terrain.HEX_SQRT3);
+
+		float tileZ = worldZ % (Terrain.HEX_SIDE * 1.5f);
 		int terrainGridX = (int) Math.floor(worldHexX / Terrain.NUM_HEXAGONS_X);
 		int terrainGridZ = (int) Math.floor(worldHexZ / Terrain.NUM_HEXAGONS_Z);
 
@@ -40,16 +91,16 @@ public class TerrainData {
 			return null;
 		}
 
-		if (tileZ > 0.5f * Terrain.HEXAGON_SIDE_LENGTH) {
+		if (tileZ > 0.5f * Terrain.HEX_SIDE) {
 			return new Vector2f(worldHexX, worldHexZ);
 		} else {
-			Vector2f left = new Vector2f(xOffset + worldHexX * Terrain.HEXAGON_SQRTHREE_LENGTH, (worldHexZ + 1) * 1.5f * Terrain.HEXAGON_SIDE_LENGTH);
-			Vector2f right = new Vector2f(left.x + Terrain.HEXAGON_SQRTHREE_LENGTH, left.y);
-			Vector2f bottom = new Vector2f(left.x + Terrain.HEXAGON_HALF_SQRTHREE_LENGTH, left.y + 0.5f * Terrain.HEXAGON_SIDE_LENGTH);
+			Vector2f left = new Vector2f(xOffset + worldHexX * Terrain.HEX_SQRT3, (worldHexZ + 1) * 1.5f * Terrain.HEX_SIDE);
+			Vector2f right = new Vector2f(left.x + Terrain.HEX_SQRT3, left.y);
+			Vector2f bottom = new Vector2f(left.x + Terrain.HEX_HALF_SQR3, left.y + 0.5f * Terrain.HEX_SIDE);
 			float leftSize = Maths.areaOfTriangle(bottom, left, new Vector2f(worldX, worldZ));
 			float rightSize = Maths.areaOfTriangle(bottom, right, new Vector2f(worldX, worldZ));
-			boolean inFromLeft = leftSize <= Terrain.HEXAGON_MINIMUM_TRIANGLE_SIZE;
-			boolean inFromRight = rightSize <= Terrain.HEXAGON_MINIMUM_TRIANGLE_SIZE;
+			boolean inFromLeft = leftSize <= Terrain.HEX_MIN_TRI_AREA;
+			boolean inFromRight = rightSize <= Terrain.HEX_MIN_TRI_AREA;
 			if (inFromLeft && inFromRight) {
 				return new Vector2f(worldHexX, worldHexZ);
 			} else if (inFromLeft) {
@@ -74,6 +125,26 @@ public class TerrainData {
 		int terrainHexX = worldHexX % Terrain.NUM_HEXAGONS_X;
 		int terrainHexZ = worldHexZ % Terrain.NUM_HEXAGONS_Z;
 		return terrainGrid[terrainGridZ][terrainGridX].heights[terrainHexZ][terrainHexX];
+	}
+
+	public Vector2f getHexagonByDirection(Direction direction, int hexX, int hexZ) {
+		int offset = hexZ % 2;
+		switch (direction) {
+		case DOWN_LEFT:
+			return new Vector2f(hexX - 1 + offset, hexZ - 1);
+		case DOWN_RIGHT:
+			return new Vector2f(hexX + offset, hexZ - 1);
+		case LEFT:
+			return new Vector2f(hexX - 1, hexZ);
+		case RIGHT:
+			return new Vector2f(hexX + 1, hexZ);
+		case UP_LEFT:
+			return new Vector2f(hexX - 1 + offset, hexZ + 1);
+		case UP_RIGHT:
+			return new Vector2f(hexX + offset, hexZ + 1);
+		default:
+			return null;
+		}
 	}
 
 	public Vector2f getTerrain(Vector2f worldCoords, int range) {
@@ -103,8 +174,6 @@ public class TerrainData {
 		int xMax = getTerrainBoundedX((int) (centerTerrain.x + range));
 		Terrain[] terrains = new Terrain[(yMax - yMin + 1) * (xMax - xMin + 1)];
 		int index = 0;
-		System.out.println(centerTerrain + " " + (centerTerrain.y - range));
-		System.out.println(yMin + " " + yMax + " " + xMin + " " + xMax);
 		for (int i = yMin; i < yMax + 1; i++) {
 			for (int j = xMin; j < xMax + 1; j++) {
 				terrains[index] = terrainGrid[j][i];
