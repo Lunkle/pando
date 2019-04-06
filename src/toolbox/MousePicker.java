@@ -79,8 +79,8 @@ public class MousePicker {
 		
 		Vector2f jump = new Vector2f(0, 0);
 		
-		jump.x = (float) Math.sin(Math.toRadians(angle))*distance;
-		jump.y = (float) Math.cos(Math.toRadians(angle))*distance;
+		jump.x = (float) Math.sin(Math.toRadians(angle))*distance/2;
+		jump.y = (float) Math.cos(Math.toRadians(angle))*distance/2;
 		return jump;
 	}
 	
