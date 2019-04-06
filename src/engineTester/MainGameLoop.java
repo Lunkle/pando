@@ -110,7 +110,7 @@ public class MainGameLoop {
 			}
 			Vector3f pPos = player.getPosition();
 			Vector2f coords = terrainData.getHexagon(pPos.x, pPos.z);
-			centerSprout.setPosition(new Vector3f((coords.y % 2) * Terrain.HEX_HALF_SQR3 + coords.x * Terrain.HEX_SQRT3 + Terrain.HEX_HALF_SQR3, terrainData.getHeightByHexCoords((int) coords.x, (int) coords.y), coords.y * 1.5f * Terrain.HEX_SIDE + Terrain.HEX_SIDE));
+			centerSprout.setPosition(new Vector3f((coords.y % 2) * Terrain.HEX_HALF_SQRT3 + coords.x * Terrain.HEX_SQRT3 + Terrain.HEX_HALF_SQRT3, terrainData.getHeightByHexCoords((int) coords.x, (int) coords.y), coords.y * 1.5f * Terrain.HEX_SIDE + Terrain.HEX_SIDE));
 
 			masterRenderer.processEntity(centerSprout);
 

@@ -69,7 +69,7 @@ public class TerrainData {
 	}
 
 	public static Vector2f hexToWorldCoords(int hexCoordX, int hexCoordZ) {
-		return new Vector2f((hexCoordZ % 2) * Terrain.HEX_HALF_SQR3 + (hexCoordX + 0.5f) * Terrain.HEX_SQRT3, (hexCoordZ * 1.5f + 1) * Terrain.HEX_SIDE);
+		return new Vector2f((hexCoordZ % 2) * Terrain.HEX_HALF_SQRT3 + (hexCoordX + 0.5f) * Terrain.HEX_SQRT3, (hexCoordZ * 1.5f + 1) * Terrain.HEX_SIDE);
 	}
 
 	public Vector2f getHexagon(Vector2f worldLocation) {
@@ -79,7 +79,7 @@ public class TerrainData {
 	public Vector2f getHexagon(float worldX, float worldZ) {
 		int worldHexZ = (int) Math.floor(worldZ / (Terrain.HEX_SIDE * 1.5));
 		int isOffset = worldHexZ % 2;
-		float xOffset = Terrain.HEX_HALF_SQR3 * isOffset;
+		float xOffset = Terrain.HEX_HALF_SQRT3 * isOffset;
 		int worldHexX = (int) Math.floor((worldX - xOffset) / Terrain.HEX_SQRT3);
 
 		float tileZ = worldZ % (Terrain.HEX_SIDE * 1.5f);
@@ -96,7 +96,7 @@ public class TerrainData {
 		} else {
 			Vector2f left = new Vector2f(xOffset + worldHexX * Terrain.HEX_SQRT3, (worldHexZ + 1) * 1.5f * Terrain.HEX_SIDE);
 			Vector2f right = new Vector2f(left.x + Terrain.HEX_SQRT3, left.y);
-			Vector2f bottom = new Vector2f(left.x + Terrain.HEX_HALF_SQR3, left.y + 0.5f * Terrain.HEX_SIDE);
+			Vector2f bottom = new Vector2f(left.x + Terrain.HEX_HALF_SQRT3, left.y + 0.5f * Terrain.HEX_SIDE);
 			float leftSize = Maths.areaOfTriangle(bottom, left, new Vector2f(worldX, worldZ));
 			float rightSize = Maths.areaOfTriangle(bottom, right, new Vector2f(worldX, worldZ));
 			boolean inFromLeft = leftSize <= Terrain.HEX_MIN_TRI_AREA;

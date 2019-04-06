@@ -17,8 +17,8 @@ public class Terrain {
 	public static final int NUM_HEXAGONS_Z = 100;
 	public static final float HEX_SIDE = 1f;
 	public static final float HEX_SQRT3 = HEX_SIDE * (float) Math.sqrt(3);
-	public static final float HEX_HALF_SQR3 = HEX_SQRT3 / 2;
-	public static final float HEX_MIN_TRI_AREA = HEX_SIDE * HEX_HALF_SQR3;
+	public static final float HEX_HALF_SQRT3 = HEX_SQRT3 / 2;
+	public static final float HEX_MIN_TRI_AREA = HEX_SIDE * HEX_HALF_SQRT3;
 	public static final float X_SIZE = NUM_HEXAGONS_X * HEX_SQRT3;
 	public static final float Z_SIZE = 1.5f * NUM_HEXAGONS_Z * HEX_SIDE;
 
@@ -110,13 +110,13 @@ public class Terrain {
 					float referencePointX = HEX_SQRT3 * (columnNumber + (isOffsetFromLeft ? 0.5f : 0));
 					float referencePointZ = 1.5f * HEX_SIDE * rowNumber;
 					int startingVerticeIndex = 18 * (rowNumber * NUM_HEXAGONS_X + columnNumber);
-					vertices[startingVerticeIndex] = referencePointX + HEX_HALF_SQR3;
+					vertices[startingVerticeIndex] = referencePointX + HEX_HALF_SQRT3;
 					vertices[startingVerticeIndex + 2] = referencePointZ;
 					vertices[startingVerticeIndex + 3] = referencePointX;
 					vertices[startingVerticeIndex + 5] = referencePointZ + 0.5f * HEX_SIDE;
 					vertices[startingVerticeIndex + 6] = referencePointX;
 					vertices[startingVerticeIndex + 8] = referencePointZ + 1.5f * HEX_SIDE;
-					vertices[startingVerticeIndex + 9] = referencePointX + HEX_HALF_SQR3;
+					vertices[startingVerticeIndex + 9] = referencePointX + HEX_HALF_SQRT3;
 					vertices[startingVerticeIndex + 11] = referencePointZ + 2 * HEX_SIDE;
 					vertices[startingVerticeIndex + 12] = referencePointX + HEX_SQRT3;
 					vertices[startingVerticeIndex + 14] = referencePointZ + 1.5f * HEX_SIDE;
@@ -125,7 +125,7 @@ public class Terrain {
 					for (int i = 0; i < 6; i++) {
 						vertices[startingVerticeIndex + 1 + i * 3] = height;
 					}
-					Vector3f center = new Vector3f(referencePointX + HEX_HALF_SQR3, height, referencePointZ + HEX_SIDE);
+					Vector3f center = new Vector3f(referencePointX + HEX_HALF_SQRT3, height, referencePointZ + HEX_SIDE);
 					for (int i = 0; i < 6; i++) {
 						Vector3f vertice = new Vector3f(vertices[startingVerticeIndex + i * 3], height, vertices[startingVerticeIndex + i * 3 + 2]);
 						Vector3f normal = calculateHexagonMeshNormal(center, vertice);
