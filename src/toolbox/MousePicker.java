@@ -57,7 +57,7 @@ public class MousePicker {
 				loc.y += mod.x/currentRay.x*currentRay.y;
 			}
 		} catch (Exception e) {
-			System.out.println("mouse OOB");
+//			System.out.println("mouse OOB");
 			return camera.getPosition();
 		}
 		
