@@ -69,13 +69,13 @@ public class MousePicker {
 		float angle = calculateRayAngle();
 		
 		float relAngle = Math.abs(angle%30-15);
-		float distance = Terrain.HEXAGON_SIDE_LENGTH;
+		float distance = Terrain.HEX_SIDE;
 		if (relAngle<15 && relAngle>0) {
-			distance = (float) (Math.cos(Math.toRadians(15-relAngle))*Terrain.HEXAGON_HALF_SQRTHREE_LENGTH);
+			distance = (float) (Math.cos(Math.toRadians(15-relAngle))*Terrain.HEX_HALF_SQRT3);
 		} else if (relAngle>15){
-			distance = (float) (Math.cos(Math.toRadians(relAngle-15))*Terrain.HEXAGON_HALF_SQRTHREE_LENGTH);
+			distance = (float) (Math.cos(Math.toRadians(relAngle-15))*Terrain.HEX_HALF_SQRT3);
 		} else if (relAngle==15) {
-			distance = Terrain.HEXAGON_HALF_SQRTHREE_LENGTH;
+			distance = Terrain.HEX_HALF_SQRT3;
 		}
 		
 		Vector2f jump = new Vector2f(0, 0);
