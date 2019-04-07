@@ -61,6 +61,7 @@ public class MousePicker {
 			return camera.getPosition();
 		}
 		
+		loc.y = terrain.getHeightByWorldCoords(loc.x, loc.z);
 		return loc;
 	}
 	

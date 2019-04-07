@@ -103,7 +103,6 @@ public class MainGameLoop {
 			camera.move(terrainData);
 
 			picker.update(terrainData, player);
-			System.out.println(picker.getCurrentRay());
 
 			masterRenderer.processEntity(player);
 			masterRenderer.processTerrainData(terrainData, camera);

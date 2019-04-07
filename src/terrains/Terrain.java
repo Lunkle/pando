@@ -98,7 +98,6 @@ public class Terrain {
 			boolean isOffsetFromLeft = false;
 			float terrainSizeX = (NUM_HEXAGONS_X + 0.5f) * HEXAGON_SQRTHREE_LENGTH;
 			float terrainSizeY = (NUM_HEXAGONS_Z * 1.5f + 0.5f) * HEXAGON_SIDE_LENGTH;
-			reader.skip(gridZ*NUM_HEXAGONS_Z);
 			for (int i = 0; i < gridZ*NUM_HEXAGONS_Z; i++) {
 				reader.readLine();
 			}
