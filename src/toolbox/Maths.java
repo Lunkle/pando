@@ -8,6 +8,10 @@ import entities.Camera;
 
 public class Maths {
 
+	public static Vector3f multiplyVector(Vector3f vector, float scale) {
+		return new Vector3f(vector.x * scale, vector.y * scale, vector.z * scale);
+	}
+
 	public static Matrix4f createTransformationMatrix(Vector2f translation, Vector2f scale) {
 		Matrix4f matrix = new Matrix4f();
 		matrix.setIdentity();
