@@ -28,7 +28,7 @@ public class FloatingCamera extends Camera {
 		position.z = startZ;
 		position.y = START_HEIGHT;
 
-		pitch = 10;
+		pitch = 30;
 		roll = 0;
 		yaw = 0;
 	}

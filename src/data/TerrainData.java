@@ -128,7 +128,8 @@ public class TerrainData {
 		int terrainGridZ = (int) Math.floor(worldHexZ / Terrain.NUM_HEXAGONS_Z);
 		int terrainHexX = worldHexX % Terrain.NUM_HEXAGONS_X;
 		int terrainHexZ = worldHexZ % Terrain.NUM_HEXAGONS_Z;
-		return terrainGrid[terrainGridZ][terrainGridX].heights[terrainHexZ][terrainHexX];
+		System.out.println(terrainGridX);
+		return terrainGrid[terrainGridX][terrainGridZ].heights[terrainHexZ][terrainHexX];
 	}
 
 	public Vector2f getHexagonByDirection(Direction direction, int hexX, int hexZ) {

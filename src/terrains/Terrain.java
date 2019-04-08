@@ -33,6 +33,8 @@ public class Terrain {
 
 	private float x;
 	private float z;
+	private int gridX;
+	private int gridZ;
 	private RawModel model;
 	private TerrainTexturePack texturePack;
 	private TerrainTexture blendMap;
@@ -44,6 +46,8 @@ public class Terrain {
 		this.blendMap = blendMap;
 		x = gridX * X_SIZE;
 		z = gridZ * Z_SIZE;
+		this.gridX = gridX;
+		this.gridZ = gridZ;
 		model = generateHexagonMeshTerrain(heightMap);
 	}
 
@@ -98,10 +102,14 @@ public class Terrain {
 			boolean isOffsetFromLeft = false;
 			float terrainSizeX = (NUM_HEXAGONS_X + 0.5f) * getHexSqrt3();
 			float terrainSizeY = (NUM_HEXAGONS_Z * 1.5f + 0.5f) * getHexSide();
+			for (int i = 0; i < gridZ*NUM_HEXAGONS_Z; i++) {
+				reader.readLine();
+			}
 			while (rowNumber < NUM_HEXAGONS_Z && (line = reader.readLine()) != null) {
 				data = line.split(",");
 				for (int columnNumber = 0; columnNumber < NUM_HEXAGONS_X; columnNumber++) {
-					float height = Float.parseFloat(data[columnNumber]);
+//					float height = Float.parseFloat(data[columnNumber]);
+					float height = Float.parseFloat(data[columnNumber+gridX*NUM_HEXAGONS_X]);
 					heights[rowNumber][columnNumber] = height;
 					float referencePointX = getHexSqrt3() * (columnNumber + (isOffsetFromLeft ? 0.5f : 0));
 					float referencePointZ = 1.5f * getHexSide() * rowNumber;
