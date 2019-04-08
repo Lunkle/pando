@@ -28,7 +28,7 @@ public class FloatingCamera extends Camera {
 		position.z = startZ;
 		position.y = START_HEIGHT;
 
-		pitch = 30;
+		pitch = 10;
 		roll = 0;
 		yaw = 0;
 	}
@@ -110,8 +110,8 @@ public class FloatingCamera extends Camera {
 			float terrainWidth = terrainData.terrainGrid[0].length * Terrain.Z_SIZE;
 			float terrainLength = terrainData.terrainGrid.length * Terrain.X_SIZE;
 
-			position.x = (position.x-0.25f + terrainLength) % (terrainLength) + vel.x;
-			position.z =(position.z-0.25f + terrainWidth) % (terrainWidth) +vel.z;
+			position.x = (position.x - 0.25f + terrainLength) % (terrainLength) + vel.x;
+			position.z = (position.z - 0.25f + terrainWidth) % (terrainWidth) + vel.z;
 
 		}
 
@@ -147,10 +147,10 @@ public class FloatingCamera extends Camera {
 		float zMod = (float) (Math.cos(Math.toRadians(getMoveAngle())) * moveMag);
 
 		if (!Double.isNaN(xMod)) {
-			position.x += xMod * Math.abs(position.y-minHeight+10) / HEIGHT_SPEED_MOD;
+			position.x += xMod * Math.abs(position.y - minHeight + 10) / HEIGHT_SPEED_MOD;
 		}
 		if (!Double.isNaN(zMod)) {
-			position.z += zMod * Math.abs(position.y-minHeight+10) / HEIGHT_SPEED_MOD;
+			position.z += zMod * Math.abs(position.y - minHeight + 10) / HEIGHT_SPEED_MOD;
 		}
 	}
 
