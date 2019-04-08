@@ -34,12 +34,14 @@ public class MainGameLoop {
 	public static void main(String[] args) {
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 		// main
-		Client client = new Client();
+		Client client = new Client(ShutdownHook.socket, ShutdownHook.socketStream);
 		try {
 			client.connect();
 		} catch (java.io.IOException io) {
 			System.out.println(io);
 		}
+		
+		System.out.println(client.socket.equals(ShutdownHook.socket));
 
 		DisplayManager.createDisplay();
 
