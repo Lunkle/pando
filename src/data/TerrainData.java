@@ -23,7 +23,7 @@ public class TerrainData {
 
 	public Terrain terrainGrid[][];
 
-	public enum Direction {
+	public static enum Direction {
 		DOWN_LEFT, DOWN_RIGHT, LEFT, RIGHT, UP_LEFT, UP_RIGHT
 	}
 
@@ -69,7 +69,7 @@ public class TerrainData {
 	}
 
 	public static Vector2f hexToWorldCoords(int hexCoordX, int hexCoordZ) {
-		return new Vector2f((hexCoordZ % 2) * Terrain.HEX_HALF_SQRT3 + (hexCoordX + 0.5f) * Terrain.HEX_SQRT3, (hexCoordZ * 1.5f + 1) * Terrain.HEX_SIDE);
+		return new Vector2f((hexCoordZ % 2) * Terrain.getHexHalfSqrt3() + (hexCoordX + 0.5f) * Terrain.getHexSqrt3(), (hexCoordZ * 1.5f + 1) * Terrain.getHexSide());
 	}
 
 	public Vector2f getHexagon(Vector2f worldLocation) {
@@ -77,12 +77,12 @@ public class TerrainData {
 	}
 
 	public Vector2f getHexagon(float worldX, float worldZ) {
-		int worldHexZ = (int) Math.floor(worldZ / (Terrain.HEX_SIDE * 1.5));
+		int worldHexZ = (int) Math.floor(worldZ / (Terrain.getHexSide() * 1.5));
 		int isOffset = worldHexZ % 2;
-		float xOffset = Terrain.HEX_HALF_SQRT3 * isOffset;
-		int worldHexX = (int) Math.floor((worldX - xOffset) / Terrain.HEX_SQRT3);
+		float xOffset = Terrain.getHexHalfSqrt3() * isOffset;
+		int worldHexX = (int) Math.floor((worldX - xOffset) / Terrain.getHexSqrt3());
 
-		float tileZ = worldZ % (Terrain.HEX_SIDE * 1.5f);
+		float tileZ = worldZ % (Terrain.getHexSide() * 1.5f);
 		int terrainGridX = (int) Math.floor(worldHexX / Terrain.NUM_HEXAGONS_X);
 		int terrainGridZ = (int) Math.floor(worldHexZ / Terrain.NUM_HEXAGONS_Z);
 
@@ -91,12 +91,12 @@ public class TerrainData {
 			return null;
 		}
 
-		if (tileZ > 0.5f * Terrain.HEX_SIDE) {
+		if (tileZ > 0.5f * Terrain.getHexSide()) {
 			return new Vector2f(worldHexX, worldHexZ);
 		} else {
-			Vector2f left = new Vector2f(xOffset + worldHexX * Terrain.HEX_SQRT3, (worldHexZ + 1) * 1.5f * Terrain.HEX_SIDE);
-			Vector2f right = new Vector2f(left.x + Terrain.HEX_SQRT3, left.y);
-			Vector2f bottom = new Vector2f(left.x + Terrain.HEX_HALF_SQRT3, left.y + 0.5f * Terrain.HEX_SIDE);
+			Vector2f left = new Vector2f(xOffset + worldHexX * Terrain.getHexSqrt3(), (worldHexZ + 1) * 1.5f * Terrain.getHexSide());
+			Vector2f right = new Vector2f(left.x + Terrain.getHexSqrt3(), left.y);
+			Vector2f bottom = new Vector2f(left.x + Terrain.getHexHalfSqrt3(), left.y + 0.5f * Terrain.getHexSide());
 			float leftSize = Maths.areaOfTriangle(bottom, left, new Vector2f(worldX, worldZ));
 			float rightSize = Maths.areaOfTriangle(bottom, right, new Vector2f(worldX, worldZ));
 			boolean inFromLeft = leftSize <= Terrain.HEX_MIN_TRI_AREA;
@@ -119,6 +119,10 @@ public class TerrainData {
 		return getHeightByHexCoords((int) worldHexCoords.x, (int) worldHexCoords.y);
 	}
 
+	public float getHeightByHexCoords(Vector2f worldHexCoords) {
+		return getHeightByHexCoords((int) worldHexCoords.x, (int) worldHexCoords.y);
+	}
+
 	public float getHeightByHexCoords(int worldHexX, int worldHexZ) {
 		int terrainGridX = (int) Math.floor(worldHexX / Terrain.NUM_HEXAGONS_X);
 		int terrainGridZ = (int) Math.floor(worldHexZ / Terrain.NUM_HEXAGONS_Z);
@@ -131,17 +135,17 @@ public class TerrainData {
 		int offset = hexZ % 2;
 		switch (direction) {
 		case DOWN_LEFT:
-			return new Vector2f(hexX - 1 + offset, hexZ - 1);
+			return new Vector2f(hexX - 1 + offset, hexZ + 1);
 		case DOWN_RIGHT:
-			return new Vector2f(hexX + offset, hexZ - 1);
+			return new Vector2f(hexX + offset, hexZ + 1);
 		case LEFT:
 			return new Vector2f(hexX - 1, hexZ);
 		case RIGHT:
 			return new Vector2f(hexX + 1, hexZ);
 		case UP_LEFT:
-			return new Vector2f(hexX - 1 + offset, hexZ + 1);
+			return new Vector2f(hexX - 1 + offset, hexZ - 1);
 		case UP_RIGHT:
-			return new Vector2f(hexX + offset, hexZ + 1);
+			return new Vector2f(hexX + offset, hexZ - 1);
 		default:
 			return null;
 		}

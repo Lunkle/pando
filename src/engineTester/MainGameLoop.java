@@ -8,6 +8,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
+import data.PlayerData;
 import data.TerrainData;
 import entities.Entity;
 import entities.FloatingCamera;
@@ -23,7 +24,6 @@ import objConverter.OBJFileLoader;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
-import terrains.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
@@ -32,6 +32,8 @@ import toolbox.MousePicker;
 public class MainGameLoop {
 
 	public static void main(String[] args) {
+		PlayerData playerdata = new PlayerData();
+
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 		// main
 		Client client = new Client();
@@ -97,14 +99,14 @@ public class MainGameLoop {
 		guis.add(gui);
 
 		Player player = new Player(oakTreeStage1Model, new Vector3f(10, 0, 15), 0.0f, 0.0f, 0.0f, 1f);
-		FloatingCamera camera = new FloatingCamera(10, 10);
+		FloatingCamera camera = new FloatingCamera(100, 100);
 //		ThirdPersonCamera camera = new ThirdPersonCamera(player);
 
 		MasterRenderer masterRenderer = new MasterRenderer();
 		GUIRenderer guiRenderer = new GUIRenderer();
 
 		MousePicker picker = new MousePicker(camera, masterRenderer.getProjectionMatrix());
-
+		System.out.println(terrainData.getHexagonByDirection(TerrainData.Direction.DOWN_RIGHT, 0, 1));
 		while (!Display.isCloseRequested()) {
 			player.move(terrainData);
 			camera.move(terrainData);
@@ -119,7 +121,9 @@ public class MainGameLoop {
 			}
 			Vector3f pPos = player.getPosition();
 			Vector2f coords = terrainData.getHexagon(pPos.x, pPos.z);
-			centerSprout.setPosition(new Vector3f((coords.y % 2) * Terrain.HEX_HALF_SQRT3 + coords.x * Terrain.HEX_SQRT3 + Terrain.HEX_HALF_SQRT3, terrainData.getHeightByHexCoords((int) coords.x, (int) coords.y), coords.y * 1.5f * Terrain.HEX_SIDE + Terrain.HEX_SIDE));
+			float height = terrainData.getHeightByHexCoords(coords);
+			Vector2f posCoords = terrainData.hexToWorldCoords(coords);
+			centerSprout.setPosition(posCoords.x, height, posCoords.y);
 
 			masterRenderer.processEntity(centerSprout);
 
