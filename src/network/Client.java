@@ -1,31 +1,50 @@
 package network;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.net.Socket;
 import java.io.*;
-import java.util.concurrent.TimeUnit;
-
 
 public class Client {
 	public static boolean loadMapLocally = false;
-	
-	public Client(){}
-	
-    static private PrintWriter out;
-    public void connect() throws IOException {
-    	if(loadMapLocally) throw new IOException();
-    	
-        Socket socket = new Socket("127.0.0.1", 2438);
-        Scanner in = new Scanner(socket.getInputStream());
-        long sTime = System.currentTimeMillis();
-        String inMessage;
-        do {
-        	inMessage = in.nextLine();
-        } while(inMessage == null && System.currentTimeMillis() - sTime < 5000);
-        
-        if(inMessage.equals("ConnectionAccepted"))
-        	System.out.println("Connection Accepted!");
-        socket.close();
-        in.close();
-    }
+	public Socket socket;
+	public Scanner in;
+
+	public Client(Socket s, Scanner sc) {
+		//Fix later. Socket and in are being reassigned when connecting
+		socket = s;
+		in = sc;
+	}
+
+	static private PrintWriter out;
+
+	public void connect() throws IOException {
+		if (loadMapLocally)
+			throw new IOException();
+
+		socket = new Socket("127.0.0.1", 2438);
+		in = new Scanner(socket.getInputStream());
+		long sTime = System.currentTimeMillis();
+		String inMessage;
+		do {
+			inMessage = in.nextLine();
+		} while (inMessage == null && System.currentTimeMillis() - sTime < 5000);
+
+		if (inMessage.equals("Connection Accepted")) {
+			System.out.println("Connection Accepted!");
+
+			out = new PrintWriter(socket.getOutputStream(), true);
+			out.println("mr");
+			ArrayList<String> mapData = new ArrayList<>();
+			boolean doneMap = false;
+			while(!doneMap) {
+				String nextLine = in.nextLine();
+				if(nextLine.equals("done")) doneMap = true;
+				else mapData.add(nextLine);
+			}
+			
+			System.out.println(mapData.size());
+		}
+
+	}
 }
