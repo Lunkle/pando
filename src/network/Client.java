@@ -9,6 +9,7 @@ public class Client {
 	public static boolean loadMapLocally = false;
 	public Socket socket;
 	public Scanner in;
+	public int seed;
 
 	public Client(Socket s, Scanner sc) {
 		//Fix later. Socket and in are being reassigned when connecting
@@ -44,6 +45,9 @@ public class Client {
 			}
 			
 			System.out.println(mapData.size());
+			
+			out.println("sd");
+			seed = Integer.parseInt(in.nextLine());
 		}
 
 	}
