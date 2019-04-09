@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -55,6 +56,10 @@ public class MainGameLoop {
 		TexturedModel fernModel = new TexturedModel(rawFernModel, fernTextureAtlas);
 		fernModel.getTexture().setHasTransparency(true);
 		fernModel.getTexture().setUseFakeLighting(true);
+		
+		ModelData playerNewData = OBJFileLoader.loadOBJ("bunny");
+		RawModel rawPlayerNewData = Loader.loadToVAO(playerNewData);
+		TexturedModel playerNewModel = new TexturedModel(rawPlayerNewData, new ModelTexture(Loader.loadTexture("image")));
 
 		ModelData oakTreeStage1Data = OBJFileLoader.loadOBJ("oakTreeStage1");
 		RawModel rawOakTreeStage1Model = Loader.loadToVAO(oakTreeStage1Data);
@@ -74,7 +79,7 @@ public class MainGameLoop {
 		List<Entity> ferns = new ArrayList<Entity>();
 		List<Entity> oaks = new ArrayList<Entity>();
 		List<Entity> trees = new ArrayList<Entity>();
-		Entity centerSprout = new Entity(oakTreeStage1Model, new Vector3f(0, 0, 0), 0, 0, 0, 1);
+		Entity centerSprout = new Entity(playerNewModel, new Vector3f(0, 0, 0), 0, 0, 0, 0.25f);
 
 		TerrainTexture backgroundTexture = new TerrainTexture(Loader.loadTexture("green"));
 		TerrainTexture rTexture = new TerrainTexture(Loader.loadTexture("dirt"));
@@ -87,6 +92,7 @@ public class MainGameLoop {
 		TerrainData terrainData = new TerrainData(10, 10, texturePack, blendMap);
 
 		Random random = new Random();
+		random.setSeed(1234);
 		for (int i = 0; i < 600; i++) {
 			float entityX = 5 + random.nextFloat() * 9.9f * Terrain.X_SIZE;
 			float entityZ = 5 + random.nextFloat() * 9.9f * Terrain.Z_SIZE;
@@ -112,7 +118,7 @@ public class MainGameLoop {
 		GUITexture gui = new GUITexture(Loader.loadTexture("grassy"), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
 		guis.add(gui);
 
-		Player player = new Player(oakTreeStage1Model, new Vector3f(10, 0, 15), 0.0f, 0.0f, 0.0f, 1f);
+		Player player = new Player(oakTreeStage1Model, new Vector3f(10, 0, 15), 0.0f, 0.0f, 0.0f, 0.1f);
 		FloatingCamera camera = new FloatingCamera(100, 100);
 //		ThirdPersonCamera camera = new ThirdPersonCamera(player);
 
@@ -121,7 +127,28 @@ public class MainGameLoop {
 
 		MousePicker picker = new MousePicker(camera, masterRenderer.getProjectionMatrix());
 		System.out.println(terrainData.getHexagonByDirection(TerrainData.Direction.DOWN_RIGHT, 0, 1));
+		Vector2f mousePos = new Vector2f(0, 0);
+		Vector2f mousePress = new Vector2f(0, 0);
+		boolean wasPressed = false;
+		
 		while (!Display.isCloseRequested()) {
+			mousePos.x = Mouse.getX();
+			mousePos.y = Mouse.getY();
+			
+			if (Mouse.isButtonDown(0)) {
+				if (!wasPressed) {
+					wasPressed = true;
+					mousePress = new Vector2f(mousePos);
+					System.out.println("yay");
+				} 
+			} else if (wasPressed) {
+				if (mousePos.equals(mousePress)) {
+					trees.add(new Entity(mediumTree1Model, picker.findCoords(terrainData), 0, random.nextFloat() * 360, 0, 1));
+					wasPressed = false;
+				}
+				wasPressed = false;
+			}
+			
 			player.move(terrainData);
 			camera.move(terrainData);
 
@@ -142,9 +169,9 @@ public class MainGameLoop {
 			Vector2f coords = terrainData.getHexagon(pPos.x, pPos.z);
 			float height = terrainData.getHeightByHexCoords(coords);
 			Vector2f posCoords = terrainData.hexToWorldCoords(coords);
-			centerSprout.setPosition(posCoords.x, height, posCoords.y);
+//			centerSprout.setPosition(posCoords.x, height, posCoords.y);
 
-			masterRenderer.processEntity(centerSprout);
+//			masterRenderer.processEntity(centerSprout);
 
 			masterRenderer.render(light, camera);
 			guiRenderer.render(guis);
