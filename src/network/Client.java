@@ -22,7 +22,7 @@ public class Client {
 		if (loadMapLocally)
 			throw new IOException();
 
-		socket = new Socket("127.0.0.1", 2438);
+		socket = new Socket("192.168.1.25", 2438);
 		in = new Scanner(socket.getInputStream());
 		long sTime = System.currentTimeMillis();
 		String inMessage;
