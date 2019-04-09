@@ -82,7 +82,7 @@ public class MasterRenderer {
 	}
 
 	public void processTerrainData(TerrainData terrainData, Camera camera) {
-		for (Terrain terrain : terrainData.getClosestTerrains(camera, 2)) {
+		for (Terrain terrain : terrainData.getClosestTerrains(camera, 3)) {
 			terrains.add(terrain);
 		}
 	}

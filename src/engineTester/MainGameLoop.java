@@ -139,7 +139,6 @@ public class MainGameLoop {
 				if (!wasPressed) {
 					wasPressed = true;
 					mousePress = new Vector2f(mousePos);
-					System.out.println("yay");
 				} 
 			} else if (wasPressed) {
 				if (mousePos.equals(mousePress)) {
