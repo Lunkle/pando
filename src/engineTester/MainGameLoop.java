@@ -24,6 +24,7 @@ import objConverter.OBJFileLoader;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
+import terrains.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
@@ -58,6 +59,10 @@ public class MainGameLoop {
 		ModelData oakTreeStage1Data = OBJFileLoader.loadOBJ("oakTreeStage1");
 		RawModel rawOakTreeStage1Model = Loader.loadToVAO(oakTreeStage1Data);
 		TexturedModel oakTreeStage1Model = new TexturedModel(rawOakTreeStage1Model, new ModelTexture(Loader.loadTexture("oakTreeStage1")));
+		
+		ModelData mediumTree1Data = OBJFileLoader.loadOBJ("lowPolyTree");
+		RawModel rawMediumTree1Model = Loader.loadToVAO(mediumTree1Data);
+		TexturedModel mediumTree1Model = new TexturedModel(rawMediumTree1Model, new ModelTexture(Loader.loadTexture("lowPolyTree")));
 
 //		ModelData oakTreeStage2Data = OBJFileLoader.loadOBJ("oakTreeStage1");
 //		RawModel rawOakTreeStage2Model = loader.loadToVAO(oakTreeStage2Data);
@@ -68,6 +73,7 @@ public class MainGameLoop {
 
 		List<Entity> ferns = new ArrayList<Entity>();
 		List<Entity> oaks = new ArrayList<Entity>();
+		List<Entity> trees = new ArrayList<Entity>();
 		Entity centerSprout = new Entity(oakTreeStage1Model, new Vector3f(0, 0, 0), 0, 0, 0, 1);
 
 		TerrainTexture backgroundTexture = new TerrainTexture(Loader.loadTexture("green"));
@@ -81,18 +87,24 @@ public class MainGameLoop {
 		TerrainData terrainData = new TerrainData(10, 10, texturePack, blendMap);
 
 		Random random = new Random();
-		for (int i = 0; i < 10; i++) {
-			float entityX = 10 + random.nextFloat() * 50;
-			float entityZ = 10 + random.nextFloat() * 50;
+		for (int i = 0; i < 600; i++) {
+			float entityX = 5 + random.nextFloat() * 9.9f * Terrain.X_SIZE;
+			float entityZ = 5 + random.nextFloat() * 9.9f * Terrain.Z_SIZE;
 			float entityY = terrainData.getHeightByWorldCoords(entityX, entityZ);
 			ferns.add(new Entity(fernModel, random.nextInt(4), new Vector3f(entityX, entityY, entityZ), 0, 0, 0, 1));
 		}
-		for (int i = 0; i < 10; i++) {
-			float entityX = 10 + random.nextFloat() * 50;
-			float entityZ = 10 + random.nextFloat() * 50;
+		for (int i = 0; i < 1000; i++) {
+			float entityX = 5 + random.nextFloat() * 9.9f * Terrain.X_SIZE;
+			float entityZ = 5 + random.nextFloat() * 9.9f * Terrain.Z_SIZE;
 			float entityY = terrainData.getHeightByWorldCoords(entityX, entityZ);
 			oaks.add(new Entity(oakTreeStage1Model, new Vector3f(entityX, entityY, entityZ), 0, random.nextFloat() * 360, 0, 3));
 		}
+		for (int i = 0; i < 150; i++) {
+			float entityX = 5 + random.nextFloat() * 9.9f * Terrain.X_SIZE;
+			float entityZ = 5 + random.nextFloat() * 9.9f * Terrain.Z_SIZE;
+			float entityY = terrainData.getHeightByWorldCoords(entityX, entityZ);
+			trees.add(new Entity(mediumTree1Model, new Vector3f(entityX, entityY, entityZ), 0, random.nextFloat() * 360, 0, 1));
+		} 
 
 		Light light = new Light(new Vector3f(20000, 20000, 2000), new Vector3f(1, 1, 1));
 
@@ -119,6 +131,12 @@ public class MainGameLoop {
 			masterRenderer.processTerrainData(terrainData, camera);
 			for (Entity fern : ferns) {
 				masterRenderer.processEntity(fern);
+			}
+			for (Entity oak : oaks) {
+				masterRenderer.processEntity(oak);
+			}
+			for (Entity tree : trees) {
+				masterRenderer.processEntity(tree);
 			}
 			Vector3f pPos = player.getPosition();
 			Vector2f coords = terrainData.getHexagon(pPos.x, pPos.z);
