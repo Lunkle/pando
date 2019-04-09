@@ -126,7 +126,6 @@ public class FloatingCamera extends Camera {
 					float rawMouseDX = Mouse.getDX();
 					float yawChange = rawMouseDX * 0.1f;
 					yaw = (yaw - yawChange) % 360;
-					System.out.println(mousePress + " " + mousePos);
 				}
 			} else {
 				wasPressed = true;

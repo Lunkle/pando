@@ -45,16 +45,23 @@ public class MousePicker {
 
 	public Vector3f findCoords(TerrainData terrain) {
 		Vector3f loc = new Vector3f(camera.getPosition());
+		Vector3f back = new Vector3f(loc);
 		try {
 			Vector2f mod = calculateJumpAmount();
 			while (terrain.getHeightByWorldCoords(loc.x, loc.z) < loc.y) {
+				back = loc;
 				loc.x += mod.x;
 				loc.z += mod.y;
 				loc.y += mod.x / currentRay.x * currentRay.y;
 			}
 		} catch (Exception e) {
 //			System.out.println("mouse OOB");
-			return camera.getPosition();
+			if (back.x > 1 && back.x < terrain.terrainGrid[0][0].heights[0].length && 
+				back.z > 1 && back.z < terrain.terrainGrid[0][0].heights.length) {
+				return back;
+			} else {
+				return new Vector3f(1, 0, 1);
+			}
 		}
 		return loc;
 	}
