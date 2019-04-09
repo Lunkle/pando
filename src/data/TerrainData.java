@@ -128,7 +128,6 @@ public class TerrainData {
 		int terrainGridZ = (int) Math.floor(worldHexZ / Terrain.NUM_HEXAGONS_Z);
 		int terrainHexX = worldHexX % Terrain.NUM_HEXAGONS_X;
 		int terrainHexZ = worldHexZ % Terrain.NUM_HEXAGONS_Z;
-		System.out.println(terrainGridX);
 		return terrainGrid[terrainGridX][terrainGridZ].heights[terrainHexZ][terrainHexX];
 	}
 

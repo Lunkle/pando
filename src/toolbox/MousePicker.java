@@ -56,7 +56,6 @@ public class MousePicker {
 //			System.out.println("mouse OOB");
 			return camera.getPosition();
 		}
-		System.out.print(loc.y);
 		return loc;
 	}
 

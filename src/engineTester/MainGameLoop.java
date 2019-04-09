@@ -43,7 +43,7 @@ public class MainGameLoop {
 			System.out.println(io);
 		}
 		
-		System.out.println(client.socket.equals(ShutdownHook.socket));
+//		System.out.println(client.socket.equals(ShutdownHook.socket));
 
 		DisplayManager.createDisplay();
 

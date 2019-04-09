@@ -2,6 +2,7 @@ package entities;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import data.TerrainData;
@@ -11,7 +12,7 @@ public class FloatingCamera extends Camera {
 	private Vector3f vel = new Vector3f(0, 0, 0);
 	private boolean wasPressed = false;
 	private int startX = 0;
-	private long mousePress = 0l;
+	private Vector2f mousePress = new Vector2f(-1, -1);
 	private float turnVel = 0f;
 	private final int START_HEIGHT = 50;
 	private final float TURN_SPEED = 2.5f;
@@ -118,20 +119,23 @@ public class FloatingCamera extends Camera {
 	}
 
 	private void calculateMouseTurn() {
+		Vector2f mousePos = new Vector2f(Mouse.getX(), Mouse.getY());
 		if (Mouse.isButtonDown(0)) {
 			if (wasPressed) {
-				if (System.currentTimeMillis() > mousePress + 250l) {
+				if (!(mousePress == mousePos)) {
 					float rawMouseDX = Mouse.getDX();
 					float yawChange = rawMouseDX * 0.1f;
 					yaw = (yaw - yawChange) % 360;
+					System.out.println(mousePress + " " + mousePos);
 				}
 			} else {
 				wasPressed = true;
-				mousePress = System.currentTimeMillis();
+				mousePress = mousePos;
 			}
 		} else if (wasPressed) {
 			wasPressed = false;
-			mousePress = 0;
+			mousePress.x = -1;
+			mousePress.y = -1;
 		}
 	}
 
