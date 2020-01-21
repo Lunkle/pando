@@ -21,6 +21,15 @@ public class Entity {
 		this.scale = scale;
 	}
 
+	public Entity(TexturedModel model, float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float scale) {
+		this.model = model;
+		this.position = new Vector3f(posX, posY, posZ);
+		this.rotX = rotX;
+		this.rotY = rotY;
+		this.rotZ = rotZ;
+		this.scale = scale;
+	}
+
 	public Entity(TexturedModel model, int index, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
 		this.model = model;
 		calculateTextureOffsets(index);

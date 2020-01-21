@@ -1,10 +1,35 @@
 package data;
 
+import models.RawModel;
+import models.TexturedModel;
+import objConverter.ModelData;
+import objConverter.OBJFileLoader;
+import renderEngine.Loader;
+import textures.ModelTexture;
+import trees.Tree;
+
 public class EntityData {
 
-	private static final String OAK_TREE = "oakTree";
-	private static final String SPRUCE_TREE = "spruceTree";
-	private static final String PANDO_TREE = "pandoTree";
-	private static final String PINE_TREE = "pineTree";
+	public static TexturedModel fernModel;
+	public static TexturedModel oakTreeStage0Model;
+//	public static TexturedModel oakTreeStage1Model;
+
+	public static void init() {
+		Tree.initializeHashmaps();
+		initializeModels();
+	}
+
+	private static void initializeModels() {
+		ModelData fernData = OBJFileLoader.loadOBJ("fern");
+		RawModel rawFernModel = Loader.loadToVAO(fernData);
+		ModelTexture fernTextureAtlas = new ModelTexture(Loader.loadTexture("fern"));
+		fernTextureAtlas.setTextureGridSize(2);
+		fernModel = new TexturedModel(rawFernModel, fernTextureAtlas);
+		fernModel.getTexture().setHasTransparency(true);
+		fernModel.getTexture().setUseFakeLighting(true);
+		ModelData oakTreeStage0Data = OBJFileLoader.loadOBJ("oakTreeStage0");
+		RawModel rawOakTreeStage0Model = Loader.loadToVAO(oakTreeStage0Data);
+		oakTreeStage0Model = new TexturedModel(rawOakTreeStage0Model, new ModelTexture(Loader.loadTexture("oakTreeStage0")));
+	}
 
 }

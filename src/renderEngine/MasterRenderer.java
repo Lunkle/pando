@@ -21,7 +21,7 @@ import terrains.Terrain;
 
 public class MasterRenderer {
 
-	private static final float FOV = 70;
+	private static float fov = 110;
 	private static final float NEAR_PLANE = 0.1f;
 	private static final float FAR_PLANE = 1000;
 
@@ -43,6 +43,14 @@ public class MasterRenderer {
 
 	public MasterRenderer() {
 		enableCulling();
+		createProjectionMatrix();
+		renderer = new EntityRenderer(shader, projectionMatrix);
+		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
+		skyboxRenderer = new SkyboxRenderer(projectionMatrix);
+	}
+
+	public void changeFOV(int value) {
+		fov = value;
 		createProjectionMatrix();
 		renderer = new EntityRenderer(shader, projectionMatrix);
 		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
@@ -82,7 +90,7 @@ public class MasterRenderer {
 	}
 
 	public void processTerrainData(TerrainData terrainData, Camera camera) {
-		for (Terrain terrain : terrainData.getClosestTerrains(camera, 3)) {
+		for (Terrain terrain : terrainData.getClosestTerrains(camera, 20)) {
 			terrains.add(terrain);
 		}
 	}
@@ -116,7 +124,7 @@ public class MasterRenderer {
 
 	private void createProjectionMatrix() {
 		float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
-		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
+		float y_scale = (float) ((1f / Math.tan(Math.toRadians(fov / 2f))) * aspectRatio);
 		float x_scale = y_scale / aspectRatio;
 		float frustum_length = FAR_PLANE - NEAR_PLANE;
 

@@ -10,18 +10,21 @@ import java.util.stream.Stream;
 import org.lwjgl.util.vector.Vector2f;
 
 import entities.Camera;
+import terrains.Hexagon;
 import terrains.Terrain;
+import terrains.Territory;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
 import toolbox.Maths;
 
 public class TerrainData {
 
-	// This 3D array stores the different types of data for the hexagons, which
-	// currently includes height, water level, greenscale
-	private int[][][] dataGrid = new int[3][][];
+	public static Territory unowned;
 
-	public Terrain terrainGrid[][];
+	private Hexagon[][] hexGrid;
+	public Terrain[][] terrainGrid;
+
+	private int renderDistance = 20;
 
 	public static enum Direction {
 		DOWN_LEFT, DOWN_RIGHT, LEFT, RIGHT, UP_LEFT, UP_RIGHT
@@ -29,11 +32,38 @@ public class TerrainData {
 
 	public TerrainData(int gridSizeX, int gridSizeZ, TerrainTexturePack texturePack, TerrainTexture blendMap) {
 		terrainGrid = new Terrain[gridSizeZ][gridSizeX];
+		hexGrid = new Hexagon[gridSizeZ * Terrain.NUM_HEXAGONS_Z][gridSizeX * Terrain.NUM_HEXAGONS_X];
+//		loadHexGrid("map");
 		for (int i = 0; i < terrainGrid.length; i++) {
 			for (int j = 0; j < terrainGrid[i].length; j++) {
 				terrainGrid[j][i] = (new Terrain(j, i, texturePack, blendMap, "map"));
 			}
 		}
+	}
+
+	private void loadHexGrid(String location) {
+		try {
+			BufferedReader reader = null;
+			reader = new BufferedReader(new FileReader("res/" + location + ".txt"));
+			String line = reader.readLine();
+			int columnNumber = 0;
+			int rowNumber = 0;
+			while (line != null) {
+				String[] dataArray = line.split(" ");
+				rowNumber = 0;
+				for (String data : dataArray) {
+					String[] hexData = data.split(",");
+					Hexagon hex = new Hexagon(columnNumber, rowNumber, Float.parseFloat(hexData[0]));
+					hexGrid[columnNumber][rowNumber] = hex;
+					rowNumber++;
+				}
+				line = reader.readLine();
+				columnNumber++;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public static void readData(String location) {
