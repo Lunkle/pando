@@ -2,7 +2,7 @@
 
 CS 2019 Passion Project
 
-Donny Ren, Misha Melnyk, Keagan Allen, Matthew Zhou
+Donny Ren, Misha Melnyk, Kegan Allen, Matthew Zhou
 
 (listed in order of decreasing IQ)
 
